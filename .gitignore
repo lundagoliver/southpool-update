@@ -24,3 +24,7 @@ hs_err_pid*
 .mvn/wrapper/
 mvnw
 mvnw.cmd
+/target/
+.classpath
+.project
+.settings/
