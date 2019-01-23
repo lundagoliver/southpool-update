@@ -21,7 +21,7 @@ public class MenuManager {
 	private List<MenuItem> menu = new ArrayList<>();
 
 	private int columnsCount=2;
-	private int buttonsPerPage = 60;
+	private int buttonsPerPage = 30;
 	
 	public void setButtonsPerPage(int buttonsPerPage) {
 		this.buttonsPerPage = buttonsPerPage;

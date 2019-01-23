@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -91,4 +92,18 @@ public class SouthPoolMemberHomeToWork implements Serializable, Member {
 	
 	@Column(name="chat_id")
 	private String chatId;
+
+	@Transient
+	@Override
+	public String getTag() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Transient
+	@Override
+	public void setTag(String tag) {
+		// TODO Auto-generated method stub
+		
+	}
 }
