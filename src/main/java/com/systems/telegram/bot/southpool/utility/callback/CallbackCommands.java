@@ -12,6 +12,8 @@ public class CallbackCommands {
 	public static final String REGISTER = "call_register";
 	public static final String HOME2WORK = "call_home2work";
 	public static final String WORK2HOME = "call_work2home";
+	public static final String HOME_TO_WORK_INFO = "home_to_work_info";
+	public static final String WORK_TO_HOME_INFO = "work_to_home_info";
 	
 	public static final String SET_YOU_ARE = "call_youare";
 	public static final String SET_NAME = "call_setname";

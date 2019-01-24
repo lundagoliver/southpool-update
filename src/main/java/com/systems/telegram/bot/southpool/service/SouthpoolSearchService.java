@@ -33,8 +33,9 @@ import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
 import com.systems.telegram.bot.southpool.net.rest.RESTHttpClient;
 import com.systems.telegram.bot.southpool.persistence.service.PersistenceService;
 import com.systems.telegram.bot.southpool.props.SouthPoolSettings;
-import com.systems.telegram.bot.southpool.utility.CallBackContants;
+import com.systems.telegram.bot.southpool.utility.callback.CallbackCommands;
 import com.systems.telegram.bot.southpool.utility.date.DateUtility;
+import com.systems.telegram.bot.southpool.utility.message.ConstantMessage;
 import com.systems.telegram.bot.southpool.utility.time.TimeUtility;
 
 @Service
@@ -131,7 +132,7 @@ public class SouthpoolSearchService {
 		
 		StringBuilder telegramNotif = new StringBuilder();
 		if (members.size() > 0) {
-			String toSearch =  CallBackContants.TODAY_DRIVER.equals(search) ? "drivers" : "passengers"; 
+			String toSearch =  CallbackCommands.TODAY_DRIVER.equals(search) ? "drivers" : "passengers"; 
 			
 			telegramNotif.append("Search results as of " + DateUtility.convertDateToGMT(8)).append("\n");
 			telegramNotif.append("Total of "+ members.size() + " " + toSearch + " found base on your ETA and ETD: " + members.size()).append("\n\n");
@@ -153,7 +154,7 @@ public class SouthpoolSearchService {
 					telegramNotif.append("Mobile: ").append(member.getMobileNumber()).append("\n");	
 				}
 				
-				if(CallBackContants.DRIVER.equals(member.getYouAre())) {
+				if(ConstantMessage.DRIVER.equals(member.getYouAre())) {
 					if (!notAvailable.contains(member.getCarPlateNumber())) {
 						telegramNotif.append("Car Plate: ").append(member.getCarPlateNumber()).append("\n");	
 					}	

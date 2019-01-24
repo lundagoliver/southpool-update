@@ -100,18 +100,6 @@ public class QuestionAndAnswer {
 			if (southPoolMemberHomeToWork != null) {
 				southPoolMemberHomeToWork.setCarPlateNumber(messageText);
 				persistenceService.merge(southPoolMemberHomeToWork);
-				//
-				//							Map<String, String> uniqueConstraintNameValueMap = new HashMap<>();
-				//							uniqueConstraintNameValueMap.put("username", username);
-				//							uniqueConstraintNameValueMap.put("carPlateNumber", messageText);
-				//							if(!persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberCars.class)) {
-				//								MemberCars memberCars = new MemberCars();
-				//								memberCars.setUsername(username);
-				//								memberCars.setCarPlateNumber(messageText);
-				//								persistenceService.persist(memberCars);
-				//								message.setText("Addtional car with plate number " + messageText + " has been added to your account.");
-				//								sendMessage(message);
-				//							}
 			}
 
 			southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
@@ -130,18 +118,6 @@ public class QuestionAndAnswer {
 			if (southPoolMemberHomeToWork != null) {
 				southPoolMemberHomeToWork.setCarPlateNumber(messageText);
 				persistenceService.merge(southPoolMemberHomeToWork);
-				//
-				//							Map<String, String> uniqueConstraintNameValueMap = new HashMap<>();
-				//							uniqueConstraintNameValueMap.put("username", username);
-				//							uniqueConstraintNameValueMap.put("carPlateNumber", messageText);
-				//							if(!persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberCars.class)) {
-				//								MemberCars memberCars = new MemberCars();
-				//								memberCars.setUsername(username);
-				//								memberCars.setCarPlateNumber(messageText);
-				//								persistenceService.persist(memberCars);
-				//								message.setText("Addtional car with plate number " + messageText + " has been added to your account.");
-				//								sendMessage(message);
-				//							}
 			}
 		}
 

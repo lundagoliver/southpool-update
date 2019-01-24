@@ -435,6 +435,7 @@ public class SPController extends TelegramLongPollingBot {
 				sendMessage(message);
 				break;
 
+			case CallbackCommands.HOME_TO_WORK_INFO:
 			case CallbackCommands.HOME2WORK:
 				MemberValidation.updateUserPreviousMessage(persistenceService, previousMessage, username, CallbackCommands.HOME2WORK);
 				if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
@@ -442,9 +443,12 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork));
 				}
 				else {
+					message.setText("Hello!, Kindly complete your registration. Kindly put \"N/A\" if information is not available.");
+					sendMessage(message);
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
 				}
 				break;
+				
 			case CallbackCommands.WORK2HOME:
 				MemberValidation.updateUserPreviousMessage(persistenceService, previousMessage, username, CallbackCommands.WORK2HOME);
 				if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {
@@ -452,6 +456,8 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome));
 				}
 				else {
+					message.setText("Hello!, Kindly complete your registration. Kindly put \"N/A\" if information is not available.");
+					sendMessage(message);
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
 				}
 				break;
@@ -485,9 +491,12 @@ public class SPController extends TelegramLongPollingBot {
 
 			case CallbackCommands.PASSENGER:	
 				if (ConstantMessage.ENTER_WHAT_TYPE_OF_USER_YOU_ARE.equals(previousMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
+					
 					southPoolMemberHomeToWork.setYouAre(ConstantMessage.PASSENGER);
+					southPoolMemberHomeToWork.setCarPlateNumber("N/A");
 					persistenceService.merge(southPoolMemberHomeToWork);
 					message.setText("Your account was successfully updated to a PASSENGER!");
+					
 					sendMessage(message);
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
@@ -497,9 +506,12 @@ public class SPController extends TelegramLongPollingBot {
 					break;
 				}
 				else if (ConstantMessage.ENTER_WHAT_TYPE_OF_USER_YOU_ARE.equals(previousMessage.getPrevMessage()) && CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
+					
 					southPoolMemberWorkToHome.setYouAre(ConstantMessage.PASSENGER);
+					southPoolMemberWorkToHome.setCarPlateNumber("N/A");
 					persistenceService.merge(southPoolMemberWorkToHome);
 					message.setText("Your account was successfully updated to a PASSENGER!");
+					
 					sendMessage(message);
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {

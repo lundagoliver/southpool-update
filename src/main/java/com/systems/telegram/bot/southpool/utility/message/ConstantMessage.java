@@ -228,9 +228,9 @@ public class ConstantMessage {
 		sb.append("<b>"+member.getYouAre()).append(message+"</b>").append("\n\n");
 		sb.append("<b>Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
 		sb.append("<b>Telegram: </b>@").append(member.getUsername()).append("\n");
-		if (!notAvailable.contains(member.getFacebookProfileLink())) {
-			sb.append("<b>Profile: </b>").append("<i>"+member.getFacebookProfileLink()+"</i>").append("\n");	
-		}
+		//if (!notAvailable.contains(member.getFacebookProfileLink())) {
+		//	sb.append("<b>Profile: </b>").append("<i>"+member.getFacebookProfileLink()+"</i>").append("\n");	
+		//}
 		if (!notAvailable.contains(member.getMobileNumber())) {
 			sb.append("<b>Mobile: </b>").append("<i>"+member.getMobileNumber()+"</i>").append("\n");	
 		}
