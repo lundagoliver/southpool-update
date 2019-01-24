@@ -185,7 +185,12 @@ public class QuestionAndAnswer {
 			southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 			if (southPoolMemberHomeToWork != null) {
 				LocalDateTime localDateTime = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8));
-				messageText = TimeUtility.convertStandardTimeToMilitaryTime(messageText);
+				try {
+					messageText = TimeUtility.convertStandardTimeToMilitaryTime(messageText);	
+				}catch(Exception e) {
+					messageText = "6:00 AM";
+				}
+				
 				String etaTime = messageText.contains(" AM") ? messageText.replace(" AM", "") : messageText.contains(" PM") ? messageText.replace(" PM", "") : messageText;
 				String[] etaHHmm = etaTime.split(":");
 				String dateETA = localDateTime.withHour(0).withMinute(0).withSecond(0).plusHours(Long.valueOf(etaHHmm[0])).plusMinutes(Long.valueOf(etaHHmm[1])).format(DateUtility.FORMAT_DATETIME);
@@ -199,7 +204,11 @@ public class QuestionAndAnswer {
 			southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 			if (southPoolMemberWorkToHome != null) {
 				LocalDateTime localDateTime = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8));
-				messageText = TimeUtility.convertStandardTimeToMilitaryTime(messageText);
+				try {
+					messageText = TimeUtility.convertStandardTimeToMilitaryTime(messageText);	
+				}catch(Exception e) {
+					messageText = "18:00 PM";
+				}
 				String etaTime = messageText.contains(" AM") ? messageText.replace(" AM", "") : messageText.contains(" PM") ? messageText.replace(" PM", "") : messageText;
 				String[] etaHHmm = etaTime.split(":");
 				String dateETA = localDateTime.withHour(0).withMinute(0).withSecond(0).plusHours(Long.valueOf(etaHHmm[0])).plusMinutes(Long.valueOf(etaHHmm[1])).format(DateUtility.FORMAT_DATETIME);
@@ -214,7 +223,12 @@ public class QuestionAndAnswer {
 			southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 			if (southPoolMemberHomeToWork != null) {
 				LocalDateTime localDateTime = DateUtility.toLocaDateTime(southPoolMemberHomeToWork.getEta());
-				String date = localDateTime.plusMinutes(Integer.valueOf(messageText.split("-")[0])).format(DateUtility.FORMAT_DATETIME);
+				String date = null;
+				try {
+					date = localDateTime.plusMinutes(Integer.valueOf(messageText.split("-")[0])).format(DateUtility.FORMAT_DATETIME);
+				}catch(Exception e) {
+					date = localDateTime.plusMinutes(15).format(DateUtility.FORMAT_DATETIME);
+				}
 				southPoolMemberHomeToWork.setEtd(date);
 				persistenceService.merge(southPoolMemberHomeToWork);
 			}
@@ -223,7 +237,12 @@ public class QuestionAndAnswer {
 			southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 			if (southPoolMemberHomeToWork != null) {
 				LocalDateTime localDateTime = DateUtility.toLocaDateTime(southPoolMemberWorkToHome.getEta());
-				String date = localDateTime.plusMinutes(Integer.valueOf(messageText.split("-")[0])).format(DateUtility.FORMAT_DATETIME);
+				String date = null;
+				try {
+					date = localDateTime.plusMinutes(Integer.valueOf(messageText.split("-")[0])).format(DateUtility.FORMAT_DATETIME);
+				}catch(Exception e) {
+					date = localDateTime.plusMinutes(15).format(DateUtility.FORMAT_DATETIME);
+				}
 				southPoolMemberWorkToHome.setEtd(date);
 				persistenceService.merge(southPoolMemberWorkToHome);
 			}

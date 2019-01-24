@@ -94,6 +94,7 @@ public class TimeUtility {
 	
 	public static String convertStandardTimeToMilitaryTime(String time) {
 		
+
 		String[] hourtime = time.split(" ");
 		String hour = hourtime[0].split(":")[0];
 		String minutes = hourtime[0].split(":")[1];
