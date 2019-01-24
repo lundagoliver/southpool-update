@@ -64,6 +64,8 @@ public class ConstantMessage {
 	public static final String FOLLOW_A_MEMBER = "Please enter the telegram username of the member that you want to follow :\n";
 	public static final String ALREADY_FOLLOWED = "You are already following this member.Thank you!\n\n";
 	public static final String FOLLOWED = "You have successfully followed this member. You will receive a notification whenever this member posted a request.Thank you!\n\n";
+	
+	
 	public static final String BANNED_USER = "You are banned from using SOUTHPOOL telegram group carpooling community. Please contact the administrators. Thank you!\n\n";
 	public static final String RESQUEST_MAX = "Sorry, you have reached the maximum allowable limit to post a request for this day.You may try again tomorrow.Thank you!\n\n";
 	public static final String RESQUEST_POSTED = "Your request was successfully posted in SOUTHPOOL telegram group carpooling community.Thank you!\n\n";
@@ -322,7 +324,7 @@ public class ConstantMessage {
 		if (!notAvailable.contains(member.getCustomMessage())) {
 			sb.append("<b>Instruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
 		}
-		sb.append("\n\n\n click ot tap to unfollow >> /unfollow__"+member.getUsername()).append("\n");
+		sb.append("\n\n\n click to unfollow >> /unfollow__"+member.getUsername()).append("\n");
 		return sb.toString();
 	}
 	

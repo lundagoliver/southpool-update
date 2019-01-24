@@ -171,6 +171,8 @@ public class SPController extends TelegramLongPollingBot {
 				followers.setActive("N");
 				persistenceService.merge(followers);
 				message.setText("You have successfully unfollowed @"+userNameOfTheMemberYouFollowed + "!");
+				sendMessage(message);
+				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 				sendMessage(message);
 			}
@@ -197,10 +199,14 @@ public class SPController extends TelegramLongPollingBot {
 						southPoolMemberHomeToWork = persistenceService.getMember(user, SouthPoolMemberHomeToWork.class);
 						if (southPoolMemberHomeToWork != null) {
 							message.setText(ConstantMessage.verifyMember(southPoolMemberHomeToWork));
+							sendMessage(message);	
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);	
 						}else{
 							message.setText("@"+user + " is not a SOUTHPOOL member!");
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);
 						}
@@ -210,10 +216,14 @@ public class SPController extends TelegramLongPollingBot {
 						southPoolMemberWorkToHome = persistenceService.getMember(user, SouthPoolMemberWorkToHome.class);
 						if (southPoolMemberWorkToHome != null) {
 							message.setText(ConstantMessage.verifyMember(southPoolMemberWorkToHome));
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);	
 						}else{
 							message.setText("@"+user + " is not a SOUTHPOOL member!");
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);
 						}
@@ -289,7 +299,6 @@ public class SPController extends TelegramLongPollingBot {
 
 							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
 							message.setText(ok+ConstantMessage.BANNED);
-							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);
 						}
 						message.setText(ConstantMessage.ACCOUNT_MESSAGE);
@@ -316,6 +325,8 @@ public class SPController extends TelegramLongPollingBot {
 							persistenceService.merge(follower);
 							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
 							message.setText(ok+ConstantMessage.ALREADY_FOLLOWED);
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);
 						}
@@ -329,6 +340,8 @@ public class SPController extends TelegramLongPollingBot {
 
 							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
 							message.setText(ok+ConstantMessage.FOLLOWED);
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);
 						}
@@ -461,7 +474,30 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
 				}
 				break;
-
+				
+			case CallbackCommands.UPDATE_MEMBER_INFO:
+				if (CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
+					MemberValidation.updateUserPreviousMessage(persistenceService, previousMessage, username, CallbackCommands.HOME2WORK);
+					if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
+						Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
+						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberHomeToWork));
+					}
+					else {
+						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
+					}
+					break;
+				}
+				else {
+					MemberValidation.updateUserPreviousMessage(persistenceService, previousMessage, username, CallbackCommands.WORK2HOME);
+					if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {
+						Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
+						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberWorkToHome));
+					}
+					else {
+						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
+					}
+					break;
+				}
 			case CallbackCommands.DRIVER:
 				if (ConstantMessage.ENTER_WHAT_TYPE_OF_USER_YOU_ARE.equals(previousMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
 					southPoolMemberHomeToWork.setYouAre(ConstantMessage.DRIVER);
@@ -1016,24 +1052,46 @@ public class SPController extends TelegramLongPollingBot {
 				break;
 
 			case CallbackCommands.FOLLOW_MEMBER:
-				if (southPoolMemberHomeToWork != null && southPoolMemberWorkToHome != null) {
-					
-					if (southPoolMemberHomeToWork.getChatId() == null) {
-						southPoolMemberHomeToWork.setChatId(String.valueOf(chatId));
-						persistenceService.merge(southPoolMemberHomeToWork);	
-					}
-					if (southPoolMemberWorkToHome.getChatId() == null) {
-						southPoolMemberWorkToHome.setChatId(String.valueOf(chatId));
-						persistenceService.merge(southPoolMemberWorkToHome);	
-					}			
-				}
+				MemberValidation.updateUserChatId(persistenceService, chatId, username);
 				botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.FOLLOW_A_MEMBER, previousMessage, username, PreviousMessage.class);
 				message.setText(botQuestion);
 				sendMessage(message);
 				break;
 				
+			case CallbackCommands.MY_FOLOWERS:
+				Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+				uniqueConstraintNameValueMap.put("username", username);
+				uniqueConstraintNameValueMap.put("active", "Y");
+				List<Followers> followers = persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class);
+				if(followers.isEmpty()) {
+					String sad = EmojiParser.parseToUnicode(":cry:");
+					message.setText(sad+"You have no follower as of this time.");
+					sendMessage(message);
+					
+					message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+					message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+					sendMessage(message);
+				}
+				else {
+					String love = EmojiParser.parseToUnicode(":heart_eyes:");
+					String blush = EmojiParser.parseToUnicode(":blush:");
+					int followersCount = followers.size();
+					String emoji = followersCount > 1 ? love : blush;
+					String append = followersCount > 1 ? " followers!" : " follower!";
+					message.setText(emoji+"Great!, You have " + followersCount + append);
+					sendMessage(message);
+					
+					message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+					message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+					sendMessage(message);
+				}
+				break;
+				
 			case CallbackCommands.HELP:
 				message.setText(ConstantMessage.showThankYou());
+				sendMessage(message);
+				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 				sendMessage(message);
 				break;
 				

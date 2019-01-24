@@ -32,6 +32,7 @@ public class CallbackCommands {
 	public static final String PASSENGER = "call_passenger";
 	
 	public static final String SHOW_MEMBER_INFO = "show_myinfo";
+	public static final String UPDATE_MEMBER_INFO = "update_myinfo";
 	public static final String POST_REQUEST = "post_request";
 	public static final String SEARCH_POST = "search_post";
 	public static final String VERIFY_MEMBER = "verify_member";
@@ -39,6 +40,7 @@ public class CallbackCommands {
 	public static final String BAN_MEMBER = "ban_member";
 	public static final String COMPLAIN_MEMBER = "complain_member";
 	public static final String FOLLOW_MEMBER = "follow_member";
+	public static final String MY_FOLOWERS = "my_followers";
 	
 	public static final String TODAY_DRIVER = "driver_today";
 	public static final String TODAY_PASSENGER = "passenger_today";
