@@ -75,7 +75,42 @@ public class ConstantMessage {
 	
 	public static final String ADMIN_ONLY = "Only the administrators can ban a member. Please use \"Report a Member\" to report a member to Admins.Thank you!\n\n";
 	
+	static List<String> notAvailable = new ArrayList<>();
+
+		
 	private ConstantMessage(){}
+	
+	public static void initNotAvailableChecker() {
+		notAvailable = new ArrayList<>();
+		notAvailable.add("N/A");
+		notAvailable.add("N/a");
+		notAvailable.add("n/A");
+		notAvailable.add("n/a");
+
+		notAvailable.add("NA");
+		notAvailable.add("na");
+		notAvailable.add("Na");
+		notAvailable.add("nA");
+
+		notAvailable.add("NO");
+		notAvailable.add("No");
+		notAvailable.add("no");
+		notAvailable.add("nO");
+
+		notAvailable.add("None");
+		notAvailable.add("none");
+		notAvailable.add("Dont have");
+		notAvailable.add("Not applicable");
+		notAvailable.add(".");
+		notAvailable.add("-");
+		notAvailable.add("~");
+		notAvailable.add("Null");
+		notAvailable.add("null");
+		notAvailable.add("No facebook");
+		notAvailable.add("Not public on FB");
+		notAvailable.add("Pass");
+		notAvailable.add("I do not have facebook");
+	}
 	
 	public static InlineKeyboardMarkup shownOptionsForSettingUserName() {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -184,36 +219,6 @@ public class ConstantMessage {
 	}
 	
 	public static String showMyInformation(Member member) {
-
-		List<String> notAvailable = new ArrayList<>();
-		notAvailable.add("N/A");
-		notAvailable.add("N/a");
-		notAvailable.add("n/A");
-		notAvailable.add("n/a");
-
-		notAvailable.add("NA");
-		notAvailable.add("na");
-		notAvailable.add("Na");
-		notAvailable.add("nA");
-
-		notAvailable.add("NO");
-		notAvailable.add("No");
-		notAvailable.add("no");
-		notAvailable.add("nO");
-
-		notAvailable.add("None");
-		notAvailable.add("none");
-		notAvailable.add("Dont have");
-		notAvailable.add("Not applicable");
-		notAvailable.add(".");
-		notAvailable.add("-");
-		notAvailable.add("~");
-		notAvailable.add("Null");
-		notAvailable.add("null");
-		notAvailable.add("No facebook");
-		notAvailable.add("Not public on FB");
-		notAvailable.add("Pass");
-		notAvailable.add("I do not have facebook");
 		
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
@@ -226,30 +231,30 @@ public class ConstantMessage {
 			message = " here for tomorrow!";
 		}
 
-		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "👨‍💼👩‍💼";
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "😊";
 		StringBuilder sb = new StringBuilder();
-		sb.append("👤<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
-		sb.append(" ├"+"@"+member.getUsername()).append("\n");
-		sb.append(" <b>├ Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
+		sb.append("<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
+		sb.append("├"+" @"+member.getUsername()).append("\n");
+		sb.append("├<b> Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append(" <b>├ Mobile: </b>").append(member.getMobileNumber()).append("\n");	
+			sb.append("├<b> Mobile: </b>").append(member.getMobileNumber()).append("\n");	
 		}
 		if("DRIVER".equals(member.getYouAre())) {
-			sb.append(" <b>├ Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
+			sb.append("├<b> Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
 		}
-		sb.append(" <b>└ Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
+		sb.append("└<b> Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
-			sb.append("\n<b>Pick Up: </b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Pick Up:   </b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getDropOffLoc())) {
-			sb.append("\n<b>Drop Off: </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Drop Off:   </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("\n<b>Route: </b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Route:   </b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
 		}
 		
 		if (!notAvailable.contains(member.getCustomMessage())) {
-			sb.append("<b>\nInstruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Instruction:   </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
 		}
 
 		return sb.toString();
@@ -258,35 +263,6 @@ public class ConstantMessage {
 	public static String showOrPostMyInformationToFollower(Member member) {
 		
 
-		List<String> notAvailable = new ArrayList<>();
-		notAvailable.add("N/A");
-		notAvailable.add("N/a");
-		notAvailable.add("n/A");
-		notAvailable.add("n/a");
-
-		notAvailable.add("NA");
-		notAvailable.add("na");
-		notAvailable.add("Na");
-		notAvailable.add("nA");
-
-		notAvailable.add("NO");
-		notAvailable.add("No");
-		notAvailable.add("no");
-		notAvailable.add("nO");
-
-		notAvailable.add("None");
-		notAvailable.add("none");
-		notAvailable.add("Dont have");
-		notAvailable.add("Not applicable");
-		notAvailable.add(".");
-		notAvailable.add("-");
-		notAvailable.add("~");
-		notAvailable.add("Null");
-		notAvailable.add("null");
-		notAvailable.add("No facebook");
-		notAvailable.add("Not public on FB");
-		notAvailable.add("Pass");
-		notAvailable.add("I do not have facebook");
 
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);

@@ -114,6 +114,8 @@ public class SPController extends TelegramLongPollingBot {
 			key.add(wait);
 			waitingTimeKeyBoard.add(key);
 		}
+		
+		ConstantMessage.initNotAvailableChecker();
 	}
 
 	@Override
