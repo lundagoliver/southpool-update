@@ -16,12 +16,15 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -92,7 +95,7 @@ public class SPController extends TelegramLongPollingBot {
 			key.add(i < 12 ? i == 0 ? "12" + ":45 AM" : i + ":45 AM" : TimeUtility.convertMilitaryToStandardTime(String.valueOf(i))+":45 PM");
 			timeKeyBoard.add(key);
 		}
-
+		
 		waitingTime = new ArrayList<>();
 		waitingTime.add("05-minutes");
 		waitingTime.add("10-minutes");
@@ -115,7 +118,7 @@ public class SPController extends TelegramLongPollingBot {
 
 	@Override
 	public void onUpdateReceived(Update update) {
-
+		
 		if (update.hasMessage() && update.getMessage().hasText()) {
 
 			String username = update.getMessage().getChat().getUserName();
@@ -400,6 +403,7 @@ public class SPController extends TelegramLongPollingBot {
 			long chatId = update.getCallbackQuery().getMessage().getChatId();
 			long messageId = update.getCallbackQuery().getMessage().getMessageId();
 			message.setChatId(chatId);
+			message.setParseMode("HTML");
 			
 			CallbackQuery callBackQuery = update.getCallbackQuery();
 			AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
@@ -1095,6 +1099,19 @@ public class SPController extends TelegramLongPollingBot {
 				sendMessage(message);
 				break;
 				
+			case CallbackCommands.MY_LOCATION:
+			    KeyboardRow row = new KeyboardRow();
+			    row.add(new KeyboardButton().setText("My Current Location").setRequestLocation(true));
+			    ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
+			    markup.setResizeKeyboard(true);
+			    ArrayList<KeyboardRow> rows = new ArrayList<>();
+			    rows.add(row);
+			    markup.setKeyboard(rows);
+			    message.setReplyMarkup(markup);
+			    message.setText("Kindly click <b>\"My Current Location\"</b> button below to get your current location.\nYou can forward this to your fellow carpoolers to track your location.");
+			    sendMessage(message);
+			    break;
+				
 			case CallbackCommands.BOT_UPDATE:
 				try {
 					southPoolService.sendMessage(ConstantMessage.showThankUpdate(), southPoolSettings.getGroupChatId(), southPoolSettings);
@@ -1144,6 +1161,14 @@ public class SPController extends TelegramLongPollingBot {
 
 
 	protected void sendMessage(SendMessage message) {
+		try {
+			execute(message);
+		} catch (TelegramApiException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void sendMessage(SendLocation message) {
 		try {
 			execute(message);
 		} catch (TelegramApiException e) {

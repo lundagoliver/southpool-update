@@ -16,7 +16,7 @@ public class Search {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: :woman_office_worker: :mag: ") + " Search Today's Passenger", CallbackCommands.TODAY_PASSENGER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":white_check_mark: ") + "Verify Member", CallbackCommands.VERIFY_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Info", CallbackCommands.SHOW_MEMBER_INFO);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setChatId(chatId);

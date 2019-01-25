@@ -31,6 +31,7 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report a Member", CallbackCommands.COMPLAIN_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")
@@ -54,7 +55,7 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":lower_left_ballpoint_pen: ") + "Edit ETA", CallbackCommands.SET_ETA);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":lower_left_ballpoint_pen: ") + "Edit ETD", CallbackCommands.SET_ETD);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":lower_left_ballpoint_pen: ") + "Edit Instruction", CallbackCommands.SET_INSTRUCTION);
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My info", CallbackCommands.SHOW_MEMBER_INFO);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);

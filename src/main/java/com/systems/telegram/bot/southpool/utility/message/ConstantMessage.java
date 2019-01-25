@@ -226,31 +226,30 @@ public class ConstantMessage {
 			message = " here for tomorrow!";
 		}
 
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "👨‍💼👩‍💼";
 		StringBuilder sb = new StringBuilder();
-		sb.append("<b>"+member.getYouAre()).append(message+"</b>").append("\n\n");
-		sb.append("<b>Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
-		sb.append("<b>Telegram: </b>@").append(member.getUsername()).append("\n");
-		//if (!notAvailable.contains(member.getFacebookProfileLink())) {
-		//	sb.append("<b>Profile: </b>").append("<i>"+member.getFacebookProfileLink()+"</i>").append("\n");	
-		//}
+		sb.append("👤<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
+		sb.append(" ├"+"@"+member.getUsername()).append("\n");
+		sb.append(" <b>├ Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append("<b>Mobile: </b>").append("<i>"+member.getMobileNumber()+"</i>").append("\n");	
+			sb.append(" <b>├ Mobile: </b>").append(member.getMobileNumber()).append("\n");	
 		}
+		if("DRIVER".equals(member.getYouAre())) {
+			sb.append(" <b>├ Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
+		}
+		sb.append(" <b>└ Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
 			sb.append("\n<b>Pick Up: </b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getDropOffLoc())) {
-			sb.append("\n<b>Drop Off: </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n\n");	
+			sb.append("\n<b>Drop Off: </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("<b>Route: </b>").append("<i>"+member.getRoute()+"</i>").append("\n\n");	
+			sb.append("\n<b>Route: </b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
 		}
-		if("DRIVER".equals(member.getYouAre())) {
-			sb.append("<b>Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
-		}
-		sb.append("<b>Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
+		
 		if (!notAvailable.contains(member.getCustomMessage())) {
-			sb.append("<b>Instruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
+			sb.append("<b>\nInstruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
 		}
 
 		return sb.toString();
@@ -291,6 +290,8 @@ public class ConstantMessage {
 
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
+		String etaTime = TimeUtility.convertToStandardTime(etaDate.split(" ")[1],etaDate.split(" ")[2]);
+		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
 
 		String message = etaDate.contains("PM") ? " here later!" : " here for today!";
 
@@ -298,33 +299,34 @@ public class ConstantMessage {
 			message = " here for tomorrow!";
 		}
 
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "👨‍💼👩‍💼";
 		StringBuilder sb = new StringBuilder();
-		sb.append("<b>"+member.getYouAre()).append(message+"</b>").append("\n");
-		sb.append("<b>Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
-		sb.append("<b>Telegram: </b>@").append(member.getUsername()).append("\n");
+		sb.append("👤<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
+		sb.append(" ├"+"@"+member.getUsername()).append("\n");
+		sb.append(" <b>├ Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append("<b>Mobile: </b>").append("<i>"+member.getMobileNumber()+"</i>").append("\n");	
+			sb.append(" <b>├ Mobile: </b>").append(member.getMobileNumber()).append("\n");	
 		}
+		if("DRIVER".equals(member.getYouAre())) {
+			sb.append(" <b>├ Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
+		}
+		sb.append(" <b>└ Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
-			sb.append("\n<b>Pick Up: </b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
+			sb.append("\n<b>Pick Up:\n</b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getDropOffLoc())) {
-			sb.append("\n<b>Drop Off: </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n\n");	
+			sb.append("\n<b>Drop Off:\n</b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
 		}
 		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("<b>Route: </b>").append("<i>"+member.getRoute()+"</i>").append("\n\n");	
+			sb.append("\n<b>Route:\n</b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
 		}
-		if(CallbackCommands.DRIVER.equals(member.getYouAre())) {
-			sb.append("<b>Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
-		}
-		String etaTime = TimeUtility.convertToStandardTime(etaDate.split(" ")[1],etaDate.split(" ")[2]);
-		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
-		sb.append("<b>Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
-
+		
 		if (!notAvailable.contains(member.getCustomMessage())) {
-			sb.append("<b>Instruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
+			sb.append("<b>\nInstruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
 		}
-		sb.append("\n\n\n click to unfollow >> /unfollow__"+member.getUsername()).append("\n");
+
+		sb.append("\n\n\nUnfollow >> /unfollow__"+member.getUsername()).append("\n\n");
+		sb.append("Start the Bot>> /start").append("\n");
 		return sb.toString();
 	}
 	

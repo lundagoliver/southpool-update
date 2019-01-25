@@ -29,7 +29,7 @@ public class Post {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +"Post as Passenger Today", CallbackCommands.POST_AS_PASSENGER);
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +" Post as Passenger Tomorrow", CallbackCommands.POST_AS_PASSENGER_TOMORROW);	
 		}
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My info", CallbackCommands.SHOW_MEMBER_INFO);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")
