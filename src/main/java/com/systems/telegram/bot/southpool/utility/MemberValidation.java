@@ -1,10 +1,14 @@
 package com.systems.telegram.bot.southpool.utility;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import com.systems.telegram.bot.southpool.entities.Member;
 import com.systems.telegram.bot.southpool.entities.PreviousMessage;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberHomeToWork;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
 import com.systems.telegram.bot.southpool.persistence.service.PersistenceService;
+import com.systems.telegram.bot.southpool.utility.date.DateUtility;
 
 public class MemberValidation {
 
@@ -72,6 +76,62 @@ public class MemberValidation {
 				southPoolMemberWorkToHome.setChatId(String.valueOf(chatId));
 				persistenceService.merge(southPoolMemberWorkToHome);	
 			}				
+		}
+	}
+	
+	public static void updateUserMemberETAandETDInfo(PersistenceService persistenceService, Member member) {
+		if (DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+			String dateToday = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+			String[] etaTime = member.getEta().split(" ");
+			String eta = dateToday + " " + etaTime[1];
+
+			String[] etdTime = member.getEtd().split(" ");
+			String etd = dateToday + " " + etdTime[1];
+
+			member.setEta(eta);
+			member.setEtd(etd);
+			persistenceService.merge(member);
+		}
+		else if (DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0).isAfter(DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+			String dateToday = DateUtility.toLocaDateTime(member.getEta()).minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+			String[] etaTime = member.getEta().split(" ");
+			String eta = dateToday + " " + etaTime[1];
+
+			String[] etdTime = member.getEtd().split(" ");
+			String etd = dateToday + " " + etdTime[1];
+
+			member.setEta(eta);
+			member.setEtd(etd);
+			persistenceService.merge(member);
+		}
+	}
+	
+	public static void updateUserMemberETAandETDInfoForTomorrow(PersistenceService persistenceService, Member member, String username) {
+		if (DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+			String dateToday = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+			String[] etaTime = member.getEta().split(" ");
+			String eta = dateToday + " " + etaTime[1];
+
+			String[] etdTime = member.getEtd().split(" ");
+			String etd = dateToday + " " + etdTime[1];
+
+			member.setEta(eta);
+			member.setEtd(etd);
+			persistenceService.merge(member);
+		}
+		
+		member = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isEqual(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+			LocalDateTime localDateTimeETA = DateUtility.toLocaDateTime(member.getEta());
+			LocalDateTime localDateTimeETD = DateUtility.toLocaDateTime(member.getEtd());
+			String dateETA = localDateTimeETA.plusDays(1).format(DateUtility.FORMAT_DATETIME);
+			String dateETD = localDateTimeETD.plusDays(1).format(DateUtility.FORMAT_DATETIME);
+			member.setEta(dateETA);
+			member.setEtd(dateETD);
+			persistenceService.merge(member);
 		}
 	}
 	

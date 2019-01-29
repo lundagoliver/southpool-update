@@ -25,6 +25,7 @@ public class DateUtility {
 	public static final DateTimeFormatter FORMAT_YMD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	public static final DateTimeFormatter FORMAT_DATETIME = DateTimeFormatter.ofPattern(DATE_FORMAT);
 	public static final DateTimeFormatter FORMAT_DATETIME_INFO = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a");
+	public static final DateTimeFormatter MM_DD = DateTimeFormatter.ofPattern("(MM/dd)");
 	public static final long TICKS_AT_EPOCH = 621355968000000000L;
     public static final long TICKS_PER_MILLISECOND = 10000000;
     

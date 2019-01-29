@@ -32,11 +32,12 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION);
+//		menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Bot Update", CallbackCommands.BOT_UPDATE);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")
 		.setChatId(chatId)
-		.setText("<b>" + this.account +"</b>\n\n"+ ConstantMessage.showMyInformation(member)+ConstantMessage.PLEASE_CHOOSE_ACTION);
+		.setText(ConstantMessage.showMyInformation(member,this.account)+ConstantMessage.PLEASE_CHOOSE_ACTION);
 		return builder.build();
 	}
 	
@@ -62,7 +63,7 @@ public abstract class AccountType {
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")
 		.setChatId(chatId)
-		.setText("<b>" + this.account +"</b>\n\n"+ ConstantMessage.showMyInformation(member)+ConstantMessage.PLEASE_CHOOSE_ACTION);
+		.setText(ConstantMessage.showMyInformation(member,this.account)+ConstantMessage.PLEASE_CHOOSE_ACTION);
 		return builder.build();
 	}
 }

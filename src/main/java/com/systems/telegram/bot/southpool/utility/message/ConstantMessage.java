@@ -1,6 +1,5 @@
 package com.systems.telegram.bot.southpool.utility.message;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.systems.telegram.bot.southpool.entities.Member;
+import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
 import com.systems.telegram.bot.southpool.utility.callback.CallbackCommands;
 import com.systems.telegram.bot.southpool.utility.date.DateUtility;
 import com.systems.telegram.bot.southpool.utility.time.TimeUtility;
@@ -25,8 +25,8 @@ public class ConstantMessage {
 	public static final String DRIVER = "DRIVER";
 	public static final String PASSENGER = "PASSENGER";
 	
-	public static final String HOME2WORK = "HOME to WORK";
-	public static final String WORK2HOME = "WORK to HOME";
+	public static final String HOME2WORK = "Home to Work";
+	public static final String WORK2HOME = "Work to Home";
 	
 	public static final String ACCOUNT_MESSAGE = "Please select which account you want to use:";
 	
@@ -218,91 +218,93 @@ public class ConstantMessage {
 		return sb.toString();
 	}
 	
-	public static String showMyInformation(Member member) {
+	public static String showMyInformation(Member member, String account) {
 		
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etaTime = TimeUtility.convertToStandardTime(etaDate.split(" ")[1],etaDate.split(" ")[2]);
 		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
 
+		String date = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.MM_DD);
 		String message = etaDate.contains("PM") ? " here later!" : " here for today!";
 
-		if (LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			message = " here for tomorrow!";
 		}
 
-		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "😊";
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
 		StringBuilder sb = new StringBuilder();
-		sb.append("<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
-		sb.append("├"+" @"+member.getUsername()).append("\n");
-		sb.append("├<b> Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
+		sb.append(memberIcon).append("\n\n");
+		sb.append(account+" ⊳  "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
 			sb.append("├<b> Mobile: </b>").append(member.getMobileNumber()).append("\n");	
 		}
 		if("DRIVER".equals(member.getYouAre())) {
-			sb.append("├<b> Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
+			sb.append("├<b> Seat: </b>").append(member.getAvailableSlots()).append("\n");	
 		}
-		sb.append("└<b> Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
+		sb.append("└<b> ETD: </b>").append(etaTime +" - "+ etdTime).append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
-			sb.append("\n⊳<b> Pick Up:   </b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Pick Up: </b>").append(member.getPicUpLoc()+"").append("\n");	
 		}
 		if (!notAvailable.contains(member.getDropOffLoc())) {
-			sb.append("\n⊳<b> Drop Off:   </b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
+			sb.append("⊳<b> Drop Off: </b>").append(member.getDropOffLoc()+"").append("\n");	
 		}
 		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("\n⊳<b> Route:   </b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
+			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
 		}
 		
 		if (!notAvailable.contains(member.getCustomMessage())) {
-			sb.append("\n⊳<b> Instruction:   </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
+			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
 		}
 
 		return sb.toString();
 	}
 	
 	public static String showOrPostMyInformationToFollower(Member member) {
-		
-
 
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etaTime = TimeUtility.convertToStandardTime(etaDate.split(" ")[1],etaDate.split(" ")[2]);
 		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
-
+		String date = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.MM_DD);
+		
 		String message = etaDate.contains("PM") ? " here later!" : " here for today!";
-
-		if (LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			message = " here for tomorrow!";
 		}
 
-		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚗" : "👨‍💼👩‍💼";
+		String account = ConstantMessage.HOME2WORK;
+		if (member instanceof SouthPoolMemberWorkToHome) {
+			account = ConstantMessage.WORK2HOME;
+		}
+		
 		StringBuilder sb = new StringBuilder();
-		sb.append("👤<b>"+member.getYouAre()).append(message+"</b> "+memberIcon).append("\n");
-		sb.append(" ├"+"@"+member.getUsername()).append("\n");
-		sb.append(" <b>├ Name: </b>").append("<i>"+member.getName()+"</i>").append("\n");
+		sb.append(account+" ⊳  "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append("@"+member.getUsername()).append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append(" <b>├ Mobile: </b>").append(member.getMobileNumber()).append("\n");	
+			sb.append("├<b> Mobile: </b>").append(member.getMobileNumber()).append("\n");	
 		}
 		if("DRIVER".equals(member.getYouAre())) {
-			sb.append(" <b>├ Seat: </b>").append("<i>"+member.getAvailableSlots()+"</i>").append("\n");	
+			sb.append("├<b> Seat: </b>").append(member.getAvailableSlots()).append("\n");	
 		}
-		sb.append(" <b>└ Time: </b>").append("<i>"+etaTime +" - "+ etdTime+"</i>").append("\n");
+		sb.append("└<b> ETD: </b>").append(etaTime +" - "+ etdTime).append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
-			sb.append("\n<b>Pick Up:\n</b>").append("<i>"+member.getPicUpLoc()+"</i>").append("\n");	
+			sb.append("\n⊳<b> Pick Up: </b>").append(member.getPicUpLoc()+"").append("\n");	
 		}
 		if (!notAvailable.contains(member.getDropOffLoc())) {
-			sb.append("\n<b>Drop Off:\n</b>").append("<i>"+member.getDropOffLoc()+"</i>").append("\n");	
+			sb.append("⊳<b> Drop Off: </b>").append(member.getDropOffLoc()+"").append("\n");	
 		}
 		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("\n<b>Route:\n</b>").append("<i>"+member.getRoute()+"</i>").append("\n");	
+			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
 		}
 		
 		if (!notAvailable.contains(member.getCustomMessage())) {
-			sb.append("<b>\nInstruction: </b>").append("<i>"+member.getCustomMessage()+"</i>").append("\n");	
+			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
 		}
 
 		sb.append("\n\n\nUnfollow >> /unfollow__"+member.getUsername()).append("\n\n");
-		sb.append("Start the Bot>> /start").append("\n");
+		sb.append("Start the Bot >> /start").append("\n");
 		return sb.toString();
 	}
 	
@@ -328,19 +330,18 @@ public class ConstantMessage {
 	public static String showThankYou() {
 		StringBuilder messageBuilder = new StringBuilder();
 		messageBuilder.append("Thank you for using @southpoolservicebot").append("\n");
-		messageBuilder.append("Contact Technical/Developer if you have questions about the bot.\n");
+		messageBuilder.append("Contact if you have any questions, concerns or issues about the bot.\n");
 		messageBuilder.append("👤 Creator").append("\n");
-		messageBuilder.append("└ Oliver Delacruz Lundag (http://telegram.me/OliverDela_cruzLundag)").append("\n");
-		messageBuilder.append("👥 Admins (9)").append("\n");
-		messageBuilder.append("├ Group Butler (http://telegram.me/GroupButler_bot)").append("\n");
-		messageBuilder.append("├ Jino (http://telegram.me/Jinopedro)").append("\n");
-		messageBuilder.append("├ Czei (http://telegram.me/b01nk3y)").append("\n");
-		messageBuilder.append("├ Chi (http://telegram.me/chicolors)").append("\n");
-		messageBuilder.append("├ Lileth (http://telegram.me/mrs_jump)").append("\n");
-		messageBuilder.append("├ Chay (http://telegram.me/chaylandicho)").append("\n");
-		messageBuilder.append("├ Jei (http://telegram.me/Iej555)").append("\n");
-		messageBuilder.append("├ Hershey Ceralde (http://telegram.me/Hershey87)").append("\n");
-		messageBuilder.append("└ Jeff (http://telegram.me/JeffMendoza));").append("\n");
+		messageBuilder.append("└ @OliverDela_cruzLundag)").append("\n");
+		messageBuilder.append("👥 Admins").append("\n");
+		messageBuilder.append("├ @Jinopedro").append("\n");
+		messageBuilder.append("├ @b01nk3y").append("\n");
+		messageBuilder.append("├ @chicolors)").append("\n");
+		messageBuilder.append("├ @mrs_jump").append("\n");
+		messageBuilder.append("├ @chaylandicho").append("\n");
+		messageBuilder.append("├ @Iej555").append("\n");
+		messageBuilder.append("├ @Hershey87").append("\n");
+		messageBuilder.append("└ @JeffMendoza);").append("\n");
 		messageBuilder.append("\n");
 		messageBuilder.append("We'd love to hear all your feedback and suggestions.").append("\n");
 		messageBuilder.append("Thank you for your cooperation.\n");
@@ -352,22 +353,22 @@ public class ConstantMessage {
 		messageBuilder.append("Hi SOUTHPOOL members,").append("\n");
 		messageBuilder.append("Good AM :)\n");
 		messageBuilder.append("Happy to share with you some of the @southpoolservicebot functionality updates.\n\n");
-		messageBuilder.append("1. Follow a Member - You can now follow a member by just clicking or tapping the (Follow a Member) button. You just need to enter the telegram username of the member that you want to follow and then once you have followed the member, you will receive a notification everytime they have a successful request in southpool.\n\n\n");
-		messageBuilder.append("Pede nyo na po matry, sample may regular or kahit hindi regular passengers or drivers kayo na naka register sa southpool. You can ask them to enter your telegram username once ni choose nila yung Follow a Member button. Makaka recieve sila ng notification directly sa service bot once nag post yung ni follow nila na member in real time. :)Or if you want to follow them back makaka receive naman kayo ng notification once sila naman ang mag post.");
+		messageBuilder.append("1. Fix issues regarding incorrect date when posting a request for today or for tomorrow.\n\n");
+		messageBuilder.append("2. Fix Search feature.\n\n");
+		messageBuilder.append("3. To get the latest updates just type /start in the chat window of the bot (@southpoolservicebot) and then press enter.\n\n");
 		messageBuilder.append(" \n\n");
 		messageBuilder.append("Contact if you have any questions, concerns or issues about the bot.\n");
 		messageBuilder.append("👤 Creator").append("\n");
-		messageBuilder.append("└ Oliver Delacruz Lundag (http://telegram.me/OliverDela_cruzLundag)").append("\n");
-		messageBuilder.append("👥 Admins (9)").append("\n");
-		messageBuilder.append("├ Group Butler (http://telegram.me/GroupButler_bot)").append("\n");
-		messageBuilder.append("├ Jino (http://telegram.me/Jinopedro)").append("\n");
-		messageBuilder.append("├ Czei (http://telegram.me/b01nk3y)").append("\n");
-		messageBuilder.append("├ Chi (http://telegram.me/chicolors)").append("\n");
-		messageBuilder.append("├ Lileth (http://telegram.me/mrs_jump)").append("\n");
-		messageBuilder.append("├ Chay (http://telegram.me/chaylandicho)").append("\n");
-		messageBuilder.append("├ Jei (http://telegram.me/Iej555)").append("\n");
-		messageBuilder.append("├ Hershey Ceralde (http://telegram.me/Hershey87)").append("\n");
-		messageBuilder.append("└ Jeff (http://telegram.me/JeffMendoza));").append("\n");
+		messageBuilder.append("└ @OliverDela_cruzLundag)").append("\n");
+		messageBuilder.append("👥 Admins").append("\n");
+		messageBuilder.append("├ @Jinopedro").append("\n");
+		messageBuilder.append("├ @b01nk3y").append("\n");
+		messageBuilder.append("├ @chicolors)").append("\n");
+		messageBuilder.append("├ @mrs_jump").append("\n");
+		messageBuilder.append("├ @chaylandicho").append("\n");
+		messageBuilder.append("├ @Iej555").append("\n");
+		messageBuilder.append("├ @Hershey87").append("\n");
+		messageBuilder.append("└ @JeffMendoza);").append("\n");
 		messageBuilder.append("\n");
 		messageBuilder.append("Thank you for your cooperation.\n");
 		return messageBuilder.toString();

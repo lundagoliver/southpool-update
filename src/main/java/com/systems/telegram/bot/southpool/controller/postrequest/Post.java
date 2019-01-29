@@ -34,7 +34,7 @@ public class Post {
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")
 		.setChatId(chatId)
-		.setText("<b>" + this.account +"</b>\n\n"+ ConstantMessage.showMyInformation(member)+ConstantMessage.PLEASE_CHOOSE_ACTION);
+		.setText(ConstantMessage.showMyInformation(member,this.account)+ConstantMessage.PLEASE_CHOOSE_ACTION);
 		return builder.build();
 	}
 }

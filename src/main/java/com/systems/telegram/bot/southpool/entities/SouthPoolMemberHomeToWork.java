@@ -82,7 +82,7 @@ public class SouthPoolMemberHomeToWork implements Serializable, Member {
 	private String customMessage;
 	
 	@Column(name="post_count")
-	private int postCount;
+	private Integer postCount;
 	
 	@Column(name="allowed")
 	private String allowed;
