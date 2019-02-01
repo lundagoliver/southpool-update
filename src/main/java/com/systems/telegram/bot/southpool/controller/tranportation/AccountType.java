@@ -3,6 +3,7 @@ package com.systems.telegram.bot.southpool.controller.tranportation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.systems.telegram.bot.southpool.entities.Member;
+import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
 import com.systems.telegram.bot.southpool.utility.callback.CallbackCommands;
 import com.systems.telegram.bot.southpool.utility.menu.InlineKeyboardBuilder;
 import com.systems.telegram.bot.southpool.utility.menu.MenuManager;
@@ -23,7 +24,7 @@ public abstract class AccountType {
 		menuManager.setColumnsCount(2);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":lower_left_ballpoint_pen: ") + "Update Info", CallbackCommands.UPDATE_MEMBER_INFO);
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Request", CallbackCommands.POST_REQUEST);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Request - " + (5 - member.getPostCount()), CallbackCommands.POST_REQUEST);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":mag_right: ") + "Search", CallbackCommands.SEARCH_POST);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":white_check_mark: ") + "Verify Member", CallbackCommands.VERIFY_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Report Traffic Status", CallbackCommands.REPORT_TRAFFIC);
@@ -32,6 +33,9 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION);
+		
+		
+		//menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_entry_sign: ") + "My Remaining Post : " + (5 - member.getPostCount()), command);
 //		menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Bot Update", CallbackCommands.BOT_UPDATE);
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);

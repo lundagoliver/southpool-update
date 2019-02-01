@@ -255,4 +255,18 @@ public class Followers implements Serializable, Member {
 		
 	}
 
+	@Transient
+	@Override
+	public Integer getPostCount() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transient
+	@Override
+	public void setPostCount(Integer postCount) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

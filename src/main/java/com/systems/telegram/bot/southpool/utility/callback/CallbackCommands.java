@@ -42,6 +42,7 @@ public class CallbackCommands {
 	public static final String FOLLOW_MEMBER = "follow_member";
 	public static final String MY_FOLOWERS = "my_followers";
 	public static final String MY_LOCATION = "my_location";
+	public static final String MY_REMAINING_POST = "my_remaining_post";
 	
 	public static final String TODAY_DRIVER = "driver_today";
 	public static final String TODAY_PASSENGER = "passenger_today";

@@ -232,18 +232,26 @@ public class ConstantMessage {
 			message = " here for tomorrow!";
 		}
 
+		StringBuilder seat = new StringBuilder();
+		if (member.getAvailableSlots() != null) {
+			for (int i = 0; i<Integer.valueOf(member.getAvailableSlots()); i++) {
+				seat.append("💺");
+			}	
+		}
+		
+		
 		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
 		StringBuilder sb = new StringBuilder();
 		sb.append(memberIcon).append("\n\n");
-		sb.append(account+" ⊳  "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append(account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
 		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append("├<b> Mobile: </b>").append(member.getMobileNumber()).append("\n");	
+			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
 		}
-		if("DRIVER".equals(member.getYouAre())) {
-			sb.append("├<b> Seat: </b>").append(member.getAvailableSlots()).append("\n");	
+		if("DRIVER".equals(member.getYouAre()) && member.getAvailableSlots() != null) {
+			sb.append("├ Seat: ").append(member.getAvailableSlots()).append(" "+seat.toString()).append("\n");	
 		}
-		sb.append("└<b> ETD: </b>").append(etaTime +" - "+ etdTime).append("\n");
+		sb.append("└ ETD: ").append(etaTime +" - "+ etdTime).append("\n");
 		if (!notAvailable.contains(member.getPicUpLoc())) {
 			sb.append("\n⊳<b> Pick Up: </b>").append(member.getPicUpLoc()+"").append("\n");	
 		}

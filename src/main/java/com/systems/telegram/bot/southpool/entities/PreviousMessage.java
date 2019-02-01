@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -197,6 +198,20 @@ public class PreviousMessage implements Serializable, Member {
 
 	@Override
 	public void setCustomMessage(String custom_message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Transient
+	@Override
+	public Integer getPostCount() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transient
+	@Override
+	public void setPostCount(Integer postCount) {
 		// TODO Auto-generated method stub
 		
 	}

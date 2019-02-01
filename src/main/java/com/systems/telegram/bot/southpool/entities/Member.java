@@ -21,6 +21,7 @@ public interface Member {
 	public Date getRegisterDate();
 	public String getCustomMessage();
 	public String getTag();
+	public Integer getPostCount();
 	
 	public void setId(Long id);
 	public void setName(String name);
@@ -39,4 +40,5 @@ public interface Member {
 	public void setRegisterDate(Date registerDate);
 	public void setCustomMessage(String custom_message);
 	public void setTag(String tag);
+	public void setPostCount(Integer postCount);
 }
