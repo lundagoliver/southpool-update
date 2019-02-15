@@ -31,6 +31,7 @@ public class ConstantMessage {
 	public static final String ACCOUNT_MESSAGE = "Please select which account you want to use:";
 	
 	public static final String SET_USERNAME_MESSAGE_POP_UP = "Sorry, but you need to set your username first before you can use this service.\n\n";
+	public static final String ALREADY_JOINED = "You are already a member of SOUTHPOOL carpooling community.\n\n";
 	public static final String SET_USERNAME_MESSAGE = "Sorry, but you need to set your username first before you can use this service.\n\n Please choose action:";
 	
 	public static final String SETUP_USERNAME_DONE_MESSAGE = " \nThen once you have done setting your telegram user name. You can proceed to member registration by clicking \"REGISTER\" button below.";
@@ -57,7 +58,7 @@ public class ConstantMessage {
 	public static final String PLEASE_CHOOSE_ACTION = "\nPlease Choose action:";
 	public static final String REPORT_TRAFFIC_STATUS = "Please enter any traffic related information that you want to share in the group.\n\n Example:\n oil price hike/rollback, traffic status or any MMDA operations:\n";
 	public static final String REPORT_POSTED = "Your report was successfully posted in SOUTHPOOL telegram group carpooling community.Thank you!\n\n";
-	public static final String COMPLAIN_MEMBER_PASSENGER_OR_DRIVER = "Please enter your concern to a passenger or to a driver. Your concern will be directly send to the southpool administors only:\n";
+	public static final String COMPLAIN_MEMBER_PASSENGER_OR_DRIVER = "Please enter your concern to a passenger or to a driver or any other concern related to SOUTHPOOL. This will be directly send to the southpool administors only:\n";
 	public static final String POSTED_COMPLAIN_MEMBER_PASSENGER_OR_DRIVER = "Your complain was successfully sent to the SOUTHPOOL administrators. Rest assured that this will be reviewed by the admins and will give necessary action to your concern. Thank you for your cooperation.\n";
 	public static final String BAN_MEMBER_TO_USE_THE_BOT = "Please enter the username of the member that you want to ban from using southpool :\n";
 	public static final String BANNED = "User was successfully banned from using SOUTHPOOL telegram group carpooling community.Thank you!\n\n";
@@ -232,9 +233,16 @@ public class ConstantMessage {
 			message = " here for tomorrow!";
 		}
 
+		int seatCount;
+		try {
+			seatCount = Integer.valueOf(member.getAvailableSlots());
+		}catch (Exception e) {
+			seatCount = 1;
+		}
+		
 		StringBuilder seat = new StringBuilder();
 		if (member.getAvailableSlots() != null) {
-			for (int i = 0; i<Integer.valueOf(member.getAvailableSlots()); i++) {
+			for (int i = 0; i<seatCount; i++) {
 				seat.append("💺");
 			}	
 		}
@@ -340,16 +348,15 @@ public class ConstantMessage {
 		messageBuilder.append("Thank you for using @southpoolservicebot").append("\n");
 		messageBuilder.append("Contact if you have any questions, concerns or issues about the bot.\n");
 		messageBuilder.append("👤 Creator").append("\n");
-		messageBuilder.append("└ @OliverDela_cruzLundag)").append("\n");
+		messageBuilder.append("└ @mr_jump").append("\n");
 		messageBuilder.append("👥 Admins").append("\n");
 		messageBuilder.append("├ @Jinopedro").append("\n");
 		messageBuilder.append("├ @b01nk3y").append("\n");
-		messageBuilder.append("├ @chicolors)").append("\n");
+		messageBuilder.append("├ @chicolors").append("\n");
 		messageBuilder.append("├ @mrs_jump").append("\n");
 		messageBuilder.append("├ @chaylandicho").append("\n");
 		messageBuilder.append("├ @Iej555").append("\n");
-		messageBuilder.append("├ @Hershey87").append("\n");
-		messageBuilder.append("└ @JeffMendoza);").append("\n");
+		messageBuilder.append("└ @JeffMendoza").append("\n");
 		messageBuilder.append("\n");
 		messageBuilder.append("We'd love to hear all your feedback and suggestions.").append("\n");
 		messageBuilder.append("Thank you for your cooperation.\n");
@@ -367,16 +374,15 @@ public class ConstantMessage {
 		messageBuilder.append(" \n\n");
 		messageBuilder.append("Contact if you have any questions, concerns or issues about the bot.\n");
 		messageBuilder.append("👤 Creator").append("\n");
-		messageBuilder.append("└ @OliverDela_cruzLundag)").append("\n");
+		messageBuilder.append("└ @mr_jump").append("\n");
 		messageBuilder.append("👥 Admins").append("\n");
 		messageBuilder.append("├ @Jinopedro").append("\n");
 		messageBuilder.append("├ @b01nk3y").append("\n");
-		messageBuilder.append("├ @chicolors)").append("\n");
+		messageBuilder.append("├ @chicolors").append("\n");
 		messageBuilder.append("├ @mrs_jump").append("\n");
 		messageBuilder.append("├ @chaylandicho").append("\n");
 		messageBuilder.append("├ @Iej555").append("\n");
-		messageBuilder.append("├ @Hershey87").append("\n");
-		messageBuilder.append("└ @JeffMendoza);").append("\n");
+		messageBuilder.append("└ @JeffMendoza").append("\n");
 		messageBuilder.append("\n");
 		messageBuilder.append("Thank you for your cooperation.\n");
 		return messageBuilder.toString();

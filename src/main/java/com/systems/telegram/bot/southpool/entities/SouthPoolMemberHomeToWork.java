@@ -92,6 +92,9 @@ public class SouthPoolMemberHomeToWork implements Serializable, Member {
 	
 	@Column(name="chat_id")
 	private String chatId;
+	
+	@Column(name="join_group")
+	private String joinGroup;
 
 	@Transient
 	@Override

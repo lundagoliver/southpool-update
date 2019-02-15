@@ -239,4 +239,32 @@ public class MemberCars implements Serializable, Member {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Transient
+	@Override
+	public String getAdmin() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transient
+	@Override
+	public void setAdmin(String admin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Transient
+	@Override
+	public String getJoinGroup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transient
+	@Override
+	public void setJoinGroup(String joinGroup) {
+		// TODO Auto-generated method stub
+		
+	}
 }

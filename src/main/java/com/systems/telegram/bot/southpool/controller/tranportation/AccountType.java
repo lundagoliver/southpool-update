@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.systems.telegram.bot.southpool.entities.Member;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
+import com.systems.telegram.bot.southpool.utility.MemberValidation;
 import com.systems.telegram.bot.southpool.utility.callback.CallbackCommands;
 import com.systems.telegram.bot.southpool.utility.menu.InlineKeyboardBuilder;
 import com.systems.telegram.bot.southpool.utility.menu.MenuManager;
@@ -28,15 +29,19 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":mag_right: ") + "Search", CallbackCommands.SEARCH_POST);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":white_check_mark: ") + "Verify Member", CallbackCommands.VERIFY_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Report Traffic Status", CallbackCommands.REPORT_TRAFFIC);
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Ban Member", CallbackCommands.BAN_MEMBER);
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report a Member", CallbackCommands.COMPLAIN_MEMBER);
+		if("Y".equals(member.getAdmin())) {
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Ban Member", CallbackCommands.BAN_MEMBER);	
+		}
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report to Admins", CallbackCommands.COMPLAIN_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION);
+		if (!MemberValidation.isInfoNotComplete(member) && (member.getJoinGroup() == null || "N".equals(member.getJoinGroup()))) {
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":key: ") + "Join SP Group", CallbackCommands.JOIN_SP_GROUP);	
+		}
 		
-		
-		//menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_entry_sign: ") + "My Remaining Post : " + (5 - member.getPostCount()), command);
 //		menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Bot Update", CallbackCommands.BOT_UPDATE);
+		
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")

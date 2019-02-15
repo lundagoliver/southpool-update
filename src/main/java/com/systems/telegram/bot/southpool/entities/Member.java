@@ -22,6 +22,8 @@ public interface Member {
 	public String getCustomMessage();
 	public String getTag();
 	public Integer getPostCount();
+	public String getAdmin();
+	public String getJoinGroup();
 	
 	public void setId(Long id);
 	public void setName(String name);
@@ -41,4 +43,7 @@ public interface Member {
 	public void setCustomMessage(String custom_message);
 	public void setTag(String tag);
 	public void setPostCount(Integer postCount);
+	public void setAdmin(String admin);
+	public void setJoinGroup(String joinGroup);
+	
 }

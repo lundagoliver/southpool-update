@@ -23,6 +23,13 @@ public class RegisterMember {
 		return answerCallbackQuery;
 	}
 	
+	public static AnswerCallbackQuery alreadyJoined(CallbackQuery callBackQuery) {
+		AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+		answerCallbackQuery.setCallbackQueryId(callBackQuery.getId());
+		answerCallbackQuery.setShowAlert(true);
+		answerCallbackQuery.setText(ConstantMessage.ALREADY_JOINED);
+		return answerCallbackQuery;
+	}
 	
 	public static InlineKeyboardBuilder registerUsername(PersistenceService persistenceService, SouthPoolMemberHomeToWork southPoolMemberHomeToWork, SouthPoolMemberWorkToHome southPoolMemberWorkToHome, long chatId, String username) {
 		if (southPoolMemberHomeToWork == null) {

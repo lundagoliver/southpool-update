@@ -32,4 +32,11 @@ public class ResetPostCount {
 		persistenceService.updatetHistoryBy(sqlUpdateSouthPoolMemberHomeToWork, null);
 		persistenceService.updatetHistoryBy(sqlUpdateSouthPoolMemberWorkToHome, null);
 	}
+	
+	@Scheduled(cron = "${cron.resetHometoWorkPostCount}" )
+	@Transactional
+	public void reset() {
+		String sqlUpdateSouthPoolMemberHomeToWork = "UPDATE SouthPoolMemberHomeToWork t SET t.postCount = 0";
+		persistenceService.updatetHistoryBy(sqlUpdateSouthPoolMemberHomeToWork, null);
+	}
 }
