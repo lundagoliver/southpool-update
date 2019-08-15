@@ -37,28 +37,26 @@ public class SouthPoolService {
 	}
 	
 	public Comment sendMessageComment(String text, long userChatId, SouthPoolSettings southPoolSettings) {
-		String url = MessageFormat.format(southPoolSettings.getCommentBotUrl(), southPoolSettings.getCommentBotToken());
-		String result = null;
+		String url = "https://api.comments.bot/createPost?";
 		Comment comment = null;
 		log.info(url);
 		try {			
 			MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
-			param.add("chat_id", String.valueOf(userChatId));
+			param.add("api_key", southPoolSettings.getCommentBotToken());
+			param.add("owner_id", String.valueOf(userChatId));
 			param.add("type", "text");
 			param.add("parse_mode", "HTML");
 			param.add("text", text.replace("&", "and"));
 			param.add("disable_web_page_preview", "true");
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
-			result = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, String.class).getBody();
+			comment = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, Comment.class).getBody();
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
 		} catch (RestClientException e) {
 			log.error("error "+e);
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return comment;
 	}
 	
@@ -71,7 +69,6 @@ public class SouthPoolService {
 			param.add("parse_mode", "HTML");
 			param.add("text", text.replace("&", "and"));
 			param.add("disable_web_page_preview", "true");
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			result = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, String.class).getBody();
@@ -93,7 +90,6 @@ public class SouthPoolService {
 			param.add("chat_id", String.valueOf(groupChatId));
 			param.add("parse_mode", "HTML");
 			param.add("text", text.replace("&", "and"));
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			result = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, String.class).getBody();
@@ -115,7 +111,6 @@ public class SouthPoolService {
 			param.add("chat_id", String.valueOf(chatId));
 			param.add("parse_mode", "HTML");
 			param.add("text", text.replace("&", "and"));
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			result = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, String.class).getBody();
@@ -132,7 +127,6 @@ public class SouthPoolService {
 	public ProfilePage sendMessageCreatePage(Member member) {
 		String url = MessageFormat.format("https://api.telegra.ph/createAccount?short_name={0}&author_name={1}", member.getUsername(), !"".equals(member.getName()) ? member.getName() : member.getUsername());
 		
-		String result = null;
 		ProfilePage profilePage = null;
 		log.info(url);
 		try {
@@ -145,13 +139,11 @@ public class SouthPoolService {
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return profilePage;
 	}
 	
 	public ProfilePage sendMessageRevokeAccessToken(Member member) {
 		String url = MessageFormat.format("https://api.telegra.ph/revokeAccessToken?access_token={0}", member.getPageAccessToken());
-		String result = null;
 		ProfilePage profilePage = null;
 		log.info(url);
 		try {
@@ -164,15 +156,12 @@ public class SouthPoolService {
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return profilePage;
 	}
 	
 	
 	public Pages sendMessagePage(Member member) {
 		String url = MessageFormat.format("https://api.telegra.ph/getPageList?access_token={0}&limit=10", member.getPageAccessToken());
-		
-		String result = null;
 		Pages pages = null;
 		log.info(url);
 		try {
@@ -185,13 +174,11 @@ public class SouthPoolService {
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return pages;
 	}
 	
 	public Comment sendMessageProfileEnableComment(String text, String photoURL, long userChatId, SouthPoolSettings southPoolSettings) {
 		String url = "https://api.comments.bot/createPost?";
-		String result = null;
 		Comment comment = null;
 		log.info(url);
 		try {
@@ -202,7 +189,6 @@ public class SouthPoolService {
 			param.add("photo_url", photoURL);
 			param.add("parse_mode", "HTML");
 			param.add("caption", text.replace("&", "and"));
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			comment = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, Comment.class).getBody();
@@ -212,13 +198,11 @@ public class SouthPoolService {
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return comment;
 	}
 	
 	public UpdateProfileResponse updateMessageProfileEnableComment(String text, String photoURL, String postId, SouthPoolSettings southPoolSettings) {
 		String url = "https://api.comments.bot/editPost?";
-		String result = null;
 		UpdateProfileResponse comment = null;
 		log.info(url);
 		try {
@@ -229,7 +213,6 @@ public class SouthPoolService {
 			param.add("photo_url", photoURL);
 			param.add("parse_mode", "HTML");
 			param.add("caption", text.replace("&", "and"));
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(param));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			comment = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, UpdateProfileResponse.class).getBody();
@@ -239,7 +222,6 @@ public class SouthPoolService {
 		} catch (JsonProcessingException e) {
 			log.error("error "+e);
 		}
-		log.info(result);
 		return comment;
 	}
 }

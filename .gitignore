@@ -28,3 +28,4 @@ mvnw.cmd
 .classpath
 .project
 .settings/
+/.apt_generated/
