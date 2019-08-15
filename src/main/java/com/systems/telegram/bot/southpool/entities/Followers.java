@@ -40,7 +40,7 @@ public class Followers implements Serializable, Member {
 	private String follower;
 	
 	@Column(name="chat_id")
-	private String chatId;
+	private long chatId;
 	
 	@Column(name="active")
 	private String active;
@@ -283,16 +283,62 @@ public class Followers implements Serializable, Member {
 		
 	}
 
-	@Transient
 	@Override
-	public String getJoinGroup() {
+	public long getStar() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setStar(long star) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getPageAccessToken() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Transient
 	@Override
-	public void setJoinGroup(String joinGroup) {
+	public void setPageAccessToken(String pageAccessToken) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCreatePage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCreatePage(String createPage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getProfilePostId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProfilePostId(String profilePostId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getProfilePostLink() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProfilePostLink(String profilePostLink) {
 		// TODO Auto-generated method stub
 		
 	}

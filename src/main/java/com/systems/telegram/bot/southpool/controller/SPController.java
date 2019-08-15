@@ -28,6 +28,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.itextpdf.text.DocumentException;
+import com.systems.telegram.bot.southpool.controller.comment.response.Comment;
 import com.systems.telegram.bot.southpool.controller.postrequest.Post;
 import com.systems.telegram.bot.southpool.controller.questions.QuestionAndAnswer;
 import com.systems.telegram.bot.southpool.controller.register.RegisterMember;
@@ -35,9 +36,15 @@ import com.systems.telegram.bot.southpool.controller.search.Search;
 import com.systems.telegram.bot.southpool.controller.setusername.SetTelegramUserName;
 import com.systems.telegram.bot.southpool.controller.tranportation.Home2Work;
 import com.systems.telegram.bot.southpool.controller.tranportation.Work2Home;
+import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.ProfilePage;
+import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.Page;
+import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.PageResult;
+import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.Pages;
+import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.updateprofile.UpdateProfileResponse;
 import com.systems.telegram.bot.southpool.controller.update.UpdateMember;
 import com.systems.telegram.bot.southpool.entities.Followers;
 import com.systems.telegram.bot.southpool.entities.Member;
+import com.systems.telegram.bot.southpool.entities.MemberStar;
 import com.systems.telegram.bot.southpool.entities.PreviousMessage;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberHomeToWork;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
@@ -201,9 +208,33 @@ public class SPController extends TelegramLongPollingBot {
 					if (ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousUserMessage.getTag())) {
 						String user = messageText.contains("@") ? messageText.replaceAll("@", "") : messageText; 
 						southPoolMemberHomeToWork = persistenceService.getMember(user, SouthPoolMemberHomeToWork.class);
+						long star = persistenceService.getMember(user, MemberStar.class) == null ? 0 : persistenceService.getMember(user, MemberStar.class).getStar();
+						Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+						uniqueConstraintNameValueMap.put("username", username);
+						uniqueConstraintNameValueMap.put("active", "Y");
+						List<Followers> followers = persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class);
 						if (southPoolMemberHomeToWork != null) {
-							message.setText(ConstantMessage.verifyMember(southPoolMemberHomeToWork));
-							sendMessage(message);	
+							message.setText(ConstantMessage.verifyMember(southPoolMemberHomeToWork, star, followers.size()));
+							sendMessage(message);
+							Pages pages = null;
+							if (southPoolMemberHomeToWork.getProfilePostId() != null) {
+								pages = southPoolService.sendMessagePage(southPoolMemberHomeToWork);
+								if (!pages.getResult().getPages().isEmpty()) {
+									Page profilePage = null;
+									
+									for (Page p : pages.getResult().getPages()) {
+										if (p.getImageUrl() != null && !"".equals(p.getImageUrl())) {
+											profilePage = p;
+											break;
+										}
+									}
+									UpdateProfileResponse comment = southPoolService.updateMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberHomeToWork, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberHomeToWork.getProfilePostId(), southPoolSettings);
+									message.setText("If you want to see more details about " + username + ", please tap the button below.");
+									message.setReplyMarkup(ConstantMessage.openCommentPageLink(southPoolMemberHomeToWork.getProfilePostLink()));
+									sendMessage(message);
+								}
+							}
+							
 							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);	
@@ -218,9 +249,34 @@ public class SPController extends TelegramLongPollingBot {
 					else if (ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.WORK2HOME.equals(previousUserMessage.getTag())) {
 						String user = messageText.contains("@") ? messageText.replaceAll("@", "") : messageText;
 						southPoolMemberWorkToHome = persistenceService.getMember(user, SouthPoolMemberWorkToHome.class);
+						long star = persistenceService.getMember(user, MemberStar.class) == null ? 0 : persistenceService.getMember(user, MemberStar.class).getStar();
+						Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+						uniqueConstraintNameValueMap.put("username", username);
+						uniqueConstraintNameValueMap.put("active", "Y");
+						List<Followers> followers = persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class);
 						if (southPoolMemberWorkToHome != null) {
-							message.setText(ConstantMessage.verifyMember(southPoolMemberWorkToHome));
+							message.setText(ConstantMessage.verifyMember(southPoolMemberWorkToHome, star, followers.size()));
 							sendMessage(message);
+							
+							Pages pages = null;
+							if (southPoolMemberWorkToHome.getProfilePostId() != null) {
+								pages = southPoolService.sendMessagePage(southPoolMemberWorkToHome);
+								if (!pages.getResult().getPages().isEmpty()) {
+									Page profilePage = null;
+									
+									for (Page p : pages.getResult().getPages()) {
+										if (p.getImageUrl() != null && !"".equals(p.getImageUrl())) {
+											profilePage = p;
+											break;
+										}
+									}
+									UpdateProfileResponse comment = southPoolService.updateMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberWorkToHome, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberWorkToHome.getProfilePostId(), southPoolSettings);
+									message.setText("If you want to see more details about " + username + ", please tap the button below.");
+									message.setReplyMarkup(ConstantMessage.openCommentPageLink(southPoolMemberHomeToWork.getProfilePostLink()));
+									sendMessage(message);
+								}
+							}
+							
 							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 							sendMessage(message);	
@@ -316,39 +372,92 @@ public class SPController extends TelegramLongPollingBot {
 						String user = messageText.contains("@") ? messageText.replaceAll("@", "") : messageText;
 						southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 						southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+						if (southPoolMemberHomeToWork == null || southPoolMemberWorkToHome == null) {
+							message.setText("Username " + user + " does not exist in SOUTHPOOL. Please check the username and try again. Thank you!");
+							sendMessage(message);	
+						}
+						else {
+							long chatIdOfFollower = southPoolMemberHomeToWork.getUsername() != null ? southPoolMemberHomeToWork.getChatId() : southPoolMemberWorkToHome.getChatId() != 0 ? southPoolMemberWorkToHome.getChatId() : 0;
 
-						String chatIdOfFollower = southPoolMemberHomeToWork.getUsername() != null ? southPoolMemberHomeToWork.getChatId() : southPoolMemberWorkToHome.getChatId() != null ? southPoolMemberWorkToHome.getChatId() : "";
+							Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+							uniqueConstraintNameValueMap.put("username", user);
+							uniqueConstraintNameValueMap.put("follower", username);
+							Followers follower;
+							if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, Followers.class)) {
+								follower = (Followers) persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class).get(0);
+								follower.setActive("Y");
+								persistenceService.merge(follower);
+								String ok = EmojiParser.parseToUnicode(":white_check_mark:");
+								message.setText(ok+ConstantMessage.ALREADY_FOLLOWED);
+								sendMessage(message);
+								message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+								message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+								sendMessage(message);
+							}
+							else {
+								follower = new Followers();
+								follower.setUsername(user);
+								follower.setFollower(username);
+								follower.setChatId(chatIdOfFollower);
+								follower.setActive("Y");
+								persistenceService.persist(follower);
+
+								String ok = EmojiParser.parseToUnicode(":white_check_mark:");
+								message.setText(ok+ConstantMessage.FOLLOWED);
+								sendMessage(message);
+								message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+								message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+								sendMessage(message);
+							}
+						}
+					}
+
+					//ADD GIVE STAR LOGIC HERE
+					else if (ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousUserMessage.getTag()) || 
+							ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.WORK2HOME.equals(previousUserMessage.getTag())) {
+
+						String user = messageText.contains("@") ? messageText.replaceAll("@", "") : messageText;
+						southPoolMemberHomeToWork = persistenceService.getMember(user, SouthPoolMemberHomeToWork.class);
+						southPoolMemberWorkToHome = persistenceService.getMember(user, SouthPoolMemberWorkToHome.class);
+						if (southPoolMemberHomeToWork == null || southPoolMemberWorkToHome == null) {
+							message.setText("Username " + user + " does not exist in SOUTHPOOL. Please check the username and try again. Thank you!");
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+							sendMessage(message);
+							return;
+						}
+
+						if (user.equals(previousUserMessage.getUsername())) {
+							String warn = EmojiParser.parseToUnicode(":warning:");
+							message.setText(warn+ConstantMessage.NOT_ALLOWED_TO_GIVE_STAR_ON_OWNSELF);
+							sendMessage(message);
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+							sendMessage(message);
+							return;
+						}
 
 						Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
 						uniqueConstraintNameValueMap.put("username", user);
-						uniqueConstraintNameValueMap.put("follower", username);
-						Followers follower;
-						if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, Followers.class)) {
-							follower = (Followers) persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class).get(0);
-							follower.setActive("Y");
-							persistenceService.merge(follower);
-							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
-							message.setText(ok+ConstantMessage.ALREADY_FOLLOWED);
-							sendMessage(message);
-							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
-							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
-							sendMessage(message);
+						if (!persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberStar.class)) {
+							MemberStar memberStar = new MemberStar();
+							memberStar.setUsername(user);
+							memberStar.setStar(1);
+							persistenceService.persist(memberStar);
 						}
 						else {
-							follower = new Followers();
-							follower.setUsername(user);
-							follower.setFollower(username);
-							follower.setChatId(chatIdOfFollower);
-							follower.setActive("Y");
-							persistenceService.persist(follower);
-
-							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
-							message.setText(ok+ConstantMessage.FOLLOWED);
-							sendMessage(message);
-							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
-							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
-							sendMessage(message);
+							MemberStar memberStar = persistenceService.getMember(user, MemberStar.class);
+							long star = memberStar.getStar() + 1;
+							memberStar.setStar(star);
+							persistenceService.merge(memberStar);
 						}
+						String success = EmojiParser.parseToUnicode(":white_check_mark:");
+						message.setText(success+ConstantMessage.SEND_STAR_SUCCESS + user +"!");
+						sendMessage(message);
+						message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+						message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+						sendMessage(message);
 					}
 
 					if ( !ConstantMessage.FOLLOW_A_MEMBER.equals(previousUserMessage.getPrevMessage()) 
@@ -356,26 +465,17 @@ public class SPController extends TelegramLongPollingBot {
 							&& !ConstantMessage.BAN_MEMBER_TO_USE_THE_BOT.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.REPORT_TRAFFIC_STATUS.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) 
+							&& !ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage())
 							&& CallbackCommands.HOME2WORK.equals(previousUserMessage.getTag())) {
 
 						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousUserMessage, username, PreviousMessage.class));
 
 						if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
-							
+
 							MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
-							if(southPoolMemberHomeToWork.getJoinGroup() == null) {
-								southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
-								southPoolMemberHomeToWork.setJoinGroup("N");
-								persistenceService.merge(southPoolMemberHomeToWork);
-							}
-							if(southPoolMemberWorkToHome.getJoinGroup() == null) {
-								southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-								southPoolMemberWorkToHome.setJoinGroup("N");
-								persistenceService.merge(southPoolMemberWorkToHome);
-							}
 							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 							Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-							sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork));
+							sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork, persistenceService));
 
 						}	
 					}
@@ -384,26 +484,16 @@ public class SPController extends TelegramLongPollingBot {
 							&& !ConstantMessage.BAN_MEMBER_TO_USE_THE_BOT.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.REPORT_TRAFFIC_STATUS.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) 
+							&& !ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage())
 							&& CallbackCommands.WORK2HOME.equals(previousUserMessage.getTag())) {
 
 						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousUserMessage, username, PreviousMessage.class));
 
 						if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {
-							
 							MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
-							if(southPoolMemberWorkToHome.getJoinGroup() == null) {
-								southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-								southPoolMemberWorkToHome.setJoinGroup("N");
-								persistenceService.merge(southPoolMemberWorkToHome);
-							}
-							if(southPoolMemberHomeToWork.getJoinGroup() == null) {
-								southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
-								southPoolMemberHomeToWork.setJoinGroup("N");
-								persistenceService.merge(southPoolMemberHomeToWork);
-							}
 							southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 							Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-							sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome));
+							sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 						}	
 					}
 					break;
@@ -442,7 +532,8 @@ public class SPController extends TelegramLongPollingBot {
 			PreviousMessage previousMessage = persistenceService.getMember(username, PreviousMessage.class);
 			SouthPoolMemberHomeToWork southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 			SouthPoolMemberWorkToHome southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-
+			
+			ProfilePage page = null;
 			//check if user is a banned member
 			if (southPoolMemberHomeToWork != null && southPoolMemberWorkToHome != null) {
 				MemberValidation.updateUserChatId(persistenceService,chatId,username);
@@ -490,7 +581,7 @@ public class SPController extends TelegramLongPollingBot {
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-					sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork));
+					sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 				}
 				else {
 					message.setText("Hello!, Kindly complete your registration. Kindly put \"N/A\" if information is not available.");
@@ -509,7 +600,7 @@ public class SPController extends TelegramLongPollingBot {
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-					sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome));
+					sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
 				else {
 					message.setText("Hello!, Kindly complete your registration.\nJust put \"N/A\" if information is not available.");
@@ -526,7 +617,7 @@ public class SPController extends TelegramLongPollingBot {
 						MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
 						southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 						Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberHomeToWork));
+						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberHomeToWork,persistenceService));
 					}
 					else {
 						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
@@ -540,7 +631,7 @@ public class SPController extends TelegramLongPollingBot {
 						MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
 						southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 						Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberWorkToHome));
+						replaceMessage(chatId, messageId, home2Work.updateInformation(chatId, southPoolMemberWorkToHome,persistenceService));
 					}
 					else {
 						sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
@@ -558,7 +649,7 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
 						Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-						sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork));
+						sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 					}
 					break;
 				}
@@ -571,7 +662,7 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {
 						Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-						sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome));
+						sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 					}
 					break;
 				}
@@ -589,7 +680,7 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberHomeToWork, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberHomeToWork)) {
 						Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-						sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork));
+						sendMessage(home2Work.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 					}
 					break;
 				}
@@ -604,7 +695,7 @@ public class SPController extends TelegramLongPollingBot {
 					sendMessage(continuousSaveAndSendMessage(persistenceService, message, replyKeyboardMarkup, southPoolMemberWorkToHome, previousMessage, username, PreviousMessage.class));
 					if (!MemberValidation.isInfoNotComplete(southPoolMemberWorkToHome)) {
 						Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-						sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome));
+						sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 					}
 					break;
 				}
@@ -638,14 +729,14 @@ public class SPController extends TelegramLongPollingBot {
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Post post = new Post(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, post.request(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, post.request(chatId, southPoolMemberHomeToWork, persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Post post = new Post(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, post.request(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, post.request(chatId, southPoolMemberWorkToHome, persistenceService));
 				}
 				break;
 
@@ -665,7 +756,7 @@ public class SPController extends TelegramLongPollingBot {
 					}
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
-					postRequestAsDriver(message,predicatesMap,southPoolMemberHomeToWork,username, answerCallbackQuery);
+					postRequestAsDriver(message,predicatesMap,southPoolMemberHomeToWork,username, answerCallbackQuery, persistenceService);
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					southPoolMemberHomeToWork.setPostCount(southPoolMemberHomeToWork.getPostCount() == 0 ? 1 : southPoolMemberHomeToWork.getPostCount() + 1);
@@ -673,7 +764,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork, persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					if (southPoolMemberWorkToHome.getPostCount() == 5) {
@@ -684,7 +775,7 @@ public class SPController extends TelegramLongPollingBot {
 					}
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-					postRequestAsDriver(message,predicatesMap,southPoolMemberWorkToHome,username, answerCallbackQuery);
+					postRequestAsDriver(message,predicatesMap,southPoolMemberWorkToHome,username, answerCallbackQuery, persistenceService);
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					southPoolMemberWorkToHome.setPostCount(southPoolMemberWorkToHome.getPostCount() == 0 ? 1 : southPoolMemberWorkToHome.getPostCount() + 1);
@@ -692,7 +783,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome, persistenceService));
 				}
 				break;
 
@@ -720,7 +811,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork, persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					if (southPoolMemberWorkToHome.getPostCount() == 5) {
@@ -739,7 +830,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome, persistenceService));
 				}
 				break;
 
@@ -769,7 +860,7 @@ public class SPController extends TelegramLongPollingBot {
 						persistenceService.merge(southPoolMemberHomeToWork);	
 					}
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
-					postRequestAsDriver(message,predicatesMap,southPoolMemberHomeToWork,username, answerCallbackQuery);
+					postRequestAsDriver(message,predicatesMap,southPoolMemberHomeToWork,username, answerCallbackQuery,persistenceService);
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					southPoolMemberHomeToWork.setPostCount(southPoolMemberHomeToWork.getPostCount() == 0 ? 1 : southPoolMemberHomeToWork.getPostCount() + 1);
@@ -777,7 +868,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					if (southPoolMemberWorkToHome.getPostCount() == 5) {
@@ -798,7 +889,7 @@ public class SPController extends TelegramLongPollingBot {
 						persistenceService.merge(southPoolMemberWorkToHome);	
 					}
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-					postRequestAsDriver(message,predicatesMap,southPoolMemberWorkToHome,username, answerCallbackQuery);
+					postRequestAsDriver(message,predicatesMap,southPoolMemberWorkToHome,username, answerCallbackQuery,persistenceService);
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					southPoolMemberWorkToHome.setPostCount(southPoolMemberWorkToHome.getPostCount() == 0 ? 1 : southPoolMemberWorkToHome.getPostCount() + 1);
@@ -806,7 +897,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
 				break;
 
@@ -844,7 +935,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work home2Work = new Home2Work(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					if (southPoolMemberWorkToHome.getPostCount() == 5) {
@@ -874,7 +965,7 @@ public class SPController extends TelegramLongPollingBot {
 
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home home2Work = new Work2Home(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
 				break;
 
@@ -932,6 +1023,12 @@ public class SPController extends TelegramLongPollingBot {
 
 			case CallbackCommands.VERIFY_MEMBER:
 				botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.VERIFY_MEMBER, previousMessage, username, PreviousMessage.class);
+				message.setText(botQuestion);
+				sendMessage(message);
+				break;
+
+			case CallbackCommands.GIVE_STAR:
+				botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.GIVE_STAR_MESSAGE, previousMessage, username, PreviousMessage.class);
 				message.setText(botQuestion);
 				sendMessage(message);
 				break;
@@ -1020,46 +1117,323 @@ public class SPController extends TelegramLongPollingBot {
 			case CallbackCommands.JOIN_SP_GROUP:
 				southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-				if("Y".equals(southPoolMemberHomeToWork.getJoinGroup()) && "Y".equals(southPoolMemberWorkToHome.getJoinGroup())) {
-					sendMessage(RegisterMember.alreadyJoined(update.getCallbackQuery()));
-					break;
-				
-				}
-				if("N".equals(southPoolMemberHomeToWork.getJoinGroup()) || southPoolMemberHomeToWork.getJoinGroup() == null) {
-					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
-					southPoolMemberHomeToWork.setJoinGroup("Y");
-					persistenceService.merge(southPoolMemberHomeToWork);
-				}
-				if("N".equals(southPoolMemberWorkToHome.getJoinGroup()) || southPoolMemberWorkToHome.getJoinGroup() == null) {
-					southPoolMemberWorkToHome.setJoinGroup("Y");
-					persistenceService.merge(southPoolMemberWorkToHome);
-				}
 				if (CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
 					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 					Home2Work post = new Home2Work(ConstantMessage.HOME2WORK);
-					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork));
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
 				}
 				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
 					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 					Work2Home post = new Work2Home(ConstantMessage.WORK2HOME);
-					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome));
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
-				message.setText("<a href=\"https://t.me/joinchat/DGZqOj_ZqZ1VNKTdFDMYUQ\"> CLICK TO JOIN SOUTHPOOL GROUPHAT</a>");
+				message.setText("<a href=\"https://t.me/joinchat/DGZqOhQGYvwDY_DM8lM2jQ\"> CLICK TO JOIN SOUTHPOOL GROUPHAT</a>");
 				sendMessage(message);
 				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 				sendMessage(message);
 				break;
-				
+
+			case CallbackCommands.JOIN_SP_DRIVERS_GROUP:
+				southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+				if (CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
+					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
+					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+					Home2Work post = new Home2Work(ConstantMessage.HOME2WORK);
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
+				}
+				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
+					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
+					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+					Work2Home post = new Work2Home(ConstantMessage.WORK2HOME);
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
+				}
+				message.setText("<a href=\"https://t.me/joinchat/DGZqOhPtRoP-Hp4PHb5vwQ\"> CLICK TO JOIN Southpool Driver's Lounge group chat.</a>");
+				sendMessage(message);
+				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+				sendMessage(message);
+				break;
+
 			case CallbackCommands.BOT_UPDATE:
 				try {
 					southPoolService.sendMessage(ConstantMessage.showThankUpdate(), southPoolSettings.getGroupChatId(), southPoolSettings);
 				} catch (UnsupportedEncodingException e) {
 					log.error("",e);
+				}
+				break;
+			case CallbackCommands.CREATE_PROFILE:
+				southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+				
+				if (CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
+					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
+					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+					Home2Work post = new Home2Work(ConstantMessage.HOME2WORK);
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
+
+					page = southPoolService.sendMessageCreatePage(southPoolMemberHomeToWork);
+
+					if (page.getOk()) {
+						southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+						southPoolMemberHomeToWork.setCreatePage("Y");
+						persistenceService.merge(southPoolMemberHomeToWork);
+						
+						southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+						southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+						southPoolMemberWorkToHome.setCreatePage("Y");
+						persistenceService.merge(southPoolMemberWorkToHome);
+
+						message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+						message.setReplyMarkup(ConstantMessage.openCreatePageLink(page.getResult().getAuthUrl()));
+						sendMessage(message);	
+					}
+
+
+				}
+				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
+					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+					MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberWorkToHome);
+					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+					Work2Home post = new Work2Home(ConstantMessage.WORK2HOME);
+					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
+					
+					page = southPoolService.sendMessageCreatePage(southPoolMemberWorkToHome);
+
+					if (page.getOk()) {
+						southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+						southPoolMemberWorkToHome.setCreatePage("Y");
+						persistenceService.merge(southPoolMemberWorkToHome);
+						
+						southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+						southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+						southPoolMemberHomeToWork.setCreatePage("Y");
+						persistenceService.merge(southPoolMemberHomeToWork);
+
+						message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+						message.setReplyMarkup(ConstantMessage.openCreatePageLink(page.getResult().getAuthUrl()));
+						sendMessage(message);	
+					}
+				}
+
+				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+				sendMessage(message);
+				break;
+
+			case CallbackCommands.PUBLISH_PROFILE:
+
+				southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+
+				Pages pages = null;
+
+				if (CallbackCommands.HOME2WORK.equals(previousMessage.getTag())) {
+					southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+					pages = southPoolService.sendMessagePage(southPoolMemberHomeToWork);
+					
+					if (pages.getResult().getPages().isEmpty()) {
+						page = southPoolService.sendMessageCreatePage(southPoolMemberHomeToWork);
+						if (page.getOk()) {
+							southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberHomeToWork.setCreatePage("Y");
+							persistenceService.merge(southPoolMemberHomeToWork);
+							
+							southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+							southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberWorkToHome.setCreatePage("Y");
+							persistenceService.merge(southPoolMemberWorkToHome);
+
+							message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+							message.setReplyMarkup(ConstantMessage.openCreatePageLink(page.getResult().getAuthUrl()));
+							sendMessage(message);	
+						}
+						else {
+							southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberHomeToWork.setCreatePage("N");
+							persistenceService.merge(southPoolMemberHomeToWork);
+							
+							southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+							southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberWorkToHome.setCreatePage("N");
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							Home2Work post = new Home2Work(ConstantMessage.HOME2WORK);
+							replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
+						}
+						message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+						message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+						sendMessage(message);
+						return;
+					}
+					else {
+						Page profilePage = null;
+						
+						for (Page p : pages.getResult().getPages()) {
+							if (p.getImageUrl() != null && !"".equals(p.getImageUrl())) {
+								profilePage = p;
+								break;
+							}
+						}
+						
+						if ("".equals(profilePage.getImageUrl())) {
+							
+							ProfilePage revoke = southPoolService.sendMessageRevokeAccessToken(southPoolMemberHomeToWork);
+							southPoolMemberHomeToWork.setPageAccessToken(revoke.getResult().getAccessToken());
+							persistenceService.merge(southPoolMemberHomeToWork);
+							
+							southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+							southPoolMemberWorkToHome.setPageAccessToken(revoke.getResult().getAccessToken());
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+							message.setReplyMarkup(ConstantMessage.openCreatePageLink(revoke.getResult().getAuthUrl()));
+							sendMessage(message);
+							
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+							sendMessage(message);
+						}
+						else {
+							
+							if (southPoolMemberHomeToWork.getProfilePostId() != null) {
+								UpdateProfileResponse comment = southPoolService.updateMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberHomeToWork, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberHomeToWork.getProfilePostId(), southPoolSettings);
+								message.setText("View your profile");
+								message.setReplyMarkup(ConstantMessage.openMyCommentPageLink(southPoolMemberHomeToWork.getProfilePostLink()));
+								sendMessage(message);
+							}
+							else {
+								Comment comment = southPoolService.sendMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberHomeToWork, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberHomeToWork.getChatId(), southPoolSettings);
+								southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+								southPoolMemberHomeToWork.setProfilePostId(comment.getResult().getPostId());
+								southPoolMemberHomeToWork.setProfilePostLink(comment.getResult().getLink());
+								persistenceService.merge(southPoolMemberHomeToWork);
+								
+								southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+								southPoolMemberWorkToHome.setProfilePostId(comment.getResult().getPostId());
+								southPoolMemberWorkToHome.setProfilePostLink(comment.getResult().getLink());
+								persistenceService.merge(southPoolMemberWorkToHome);
+								
+								message.setText("View your profile");
+								message.setReplyMarkup(ConstantMessage.openMyCommentPageLink(southPoolMemberHomeToWork.getProfilePostLink()));
+								sendMessage(message);
+							}
+							
+						}
+					}
+				}
+				else if (CallbackCommands.WORK2HOME.equals(previousMessage.getTag())) {
+					southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+					pages = southPoolService.sendMessagePage(southPoolMemberWorkToHome);
+					
+					if (pages.getResult().getPages().isEmpty()) {
+						page = southPoolService.sendMessageCreatePage(southPoolMemberHomeToWork);
+						if (page.getOk()) {
+							
+							southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberWorkToHome.setCreatePage("Y");
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberHomeToWork.setCreatePage("Y");
+							persistenceService.merge(southPoolMemberHomeToWork);
+
+							message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+							message.setReplyMarkup(ConstantMessage.openCreatePageLink(page.getResult().getAuthUrl()));
+							sendMessage(message);	
+						}
+						else {
+							southPoolMemberWorkToHome.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberWorkToHome.setCreatePage("N");
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							southPoolMemberHomeToWork.setPageAccessToken(page.getResult().getAccessToken());
+							southPoolMemberHomeToWork.setCreatePage("N");
+							persistenceService.merge(southPoolMemberHomeToWork);
+							
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							MemberValidation.updateUserMemberETAandETDInfo(persistenceService, southPoolMemberHomeToWork);
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							Home2Work post = new Home2Work(ConstantMessage.HOME2WORK);
+							replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberHomeToWork,persistenceService));
+						}
+						message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+						message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+						sendMessage(message);
+						return;
+					}
+					else {
+						Page profilePage = null;
+						
+						for (Page p : pages.getResult().getPages()) {
+							if (p.getImageUrl() != null && !"".equals(p.getImageUrl())) {
+								profilePage = p;
+								break;
+							}
+						}
+
+						if ("".equals(profilePage.getImageUrl())) {
+							
+							ProfilePage revoke = southPoolService.sendMessageRevokeAccessToken(southPoolMemberWorkToHome);
+							southPoolMemberWorkToHome.setPageAccessToken(revoke.getResult().getAccessToken());
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+							southPoolMemberHomeToWork.setPageAccessToken(revoke.getResult().getAccessToken());
+							persistenceService.merge(southPoolMemberHomeToWork);
+							
+							message.setText("Please click the \"Upload Profile Photo\" button below to complete your profile.");
+							message.setReplyMarkup(ConstantMessage.openCreatePageLink(revoke.getResult().getAuthUrl()));
+							sendMessage(message);
+							
+							message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+							message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+							sendMessage(message);
+						}
+						else 
+						{
+							
+							if (southPoolMemberWorkToHome.getProfilePostId() != null) {
+								UpdateProfileResponse comment = southPoolService.updateMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberWorkToHome, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberWorkToHome.getProfilePostId(), southPoolSettings);
+															
+								message.setText("View your profile");
+								message.setReplyMarkup(ConstantMessage.openMyCommentPageLink(southPoolMemberWorkToHome.getProfilePostLink()));
+								sendMessage(message);
+							}
+							else {
+								Comment comment = southPoolService.sendMessageProfileEnableComment(ConstantMessage.showMyProfile(southPoolMemberWorkToHome, ConstantMessage.HOME2WORK ,persistenceService), profilePage.getImageUrl(), southPoolMemberWorkToHome.getChatId(), southPoolSettings);
+								
+								southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+								southPoolMemberWorkToHome.setProfilePostId(comment.getResult().getPostId());
+								southPoolMemberWorkToHome.setProfilePostLink(comment.getResult().getLink());
+								persistenceService.merge(southPoolMemberWorkToHome);
+								
+								southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+								southPoolMemberHomeToWork.setProfilePostId(comment.getResult().getPostId());
+								southPoolMemberHomeToWork.setProfilePostLink(comment.getResult().getLink());
+								persistenceService.merge(southPoolMemberHomeToWork);
+								
+								message.setText("View your profile");
+								message.setReplyMarkup(ConstantMessage.openMyCommentPageLink(southPoolMemberWorkToHome.getProfilePostLink()));
+								sendMessage(message);
+							}
+							
+						}
+					}
+					
 				}
 				break;
 
@@ -1141,7 +1515,7 @@ public class SPController extends TelegramLongPollingBot {
 		}
 	}
 
-	private boolean postRequestAsDriver(SendMessage message, Map<String,String> predicatesMap, Member member, String username, AnswerCallbackQuery answerCallbackQuery) {
+	private boolean postRequestAsDriver(SendMessage message, Map<String,String> predicatesMap, Member member, String username, AnswerCallbackQuery answerCallbackQuery,PersistenceService persistenceService) {
 		if(MemberValidation.isInfoNotComplete(member)) {
 			message.setText("Sorry, you are not allowed to post your request as a DRIVER because your information is not yet complete.\n\n" + ConstantMessage.showInfoToUpdateNext(member));
 			sendMessage(message);
@@ -1158,7 +1532,8 @@ public class SPController extends TelegramLongPollingBot {
 				if (member instanceof SouthPoolMemberWorkToHome) {
 					account = ConstantMessage.WORK2HOME;
 				}
-				southPoolService.sendMessage(ConstantMessage.showMyInformation(member, account), southPoolSettings.getGroupChatId(), southPoolSettings);
+				Comment comment = southPoolService.sendMessageComment(ConstantMessage.showMyInformation(member, account,persistenceService), member.getChatId(), southPoolSettings);
+				southPoolService.sendMessage(ConstantMessage.showMyInformationWithComment(comment,member, account,persistenceService), southPoolSettings.getGroupChatId(), southPoolSettings);
 			} catch (UnsupportedEncodingException e) {
 				log.error("",e);
 			}
@@ -1207,7 +1582,8 @@ public class SPController extends TelegramLongPollingBot {
 				if (member instanceof SouthPoolMemberWorkToHome) {
 					account = ConstantMessage.WORK2HOME;
 				}
-				southPoolService.sendMessage(ConstantMessage.showMyInformation(member, account), southPoolSettings.getGroupChatId(), southPoolSettings);
+				Comment comment = southPoolService.sendMessageComment(ConstantMessage.showMyInformation(member, account,persistenceService), member.getChatId(), southPoolSettings);
+				southPoolService.sendMessage(ConstantMessage.showMyInformationWithComment(comment,member, account,persistenceService), southPoolSettings.getGroupChatId(), southPoolSettings);
 			} catch (UnsupportedEncodingException e) {
 				log.error("",e);
 			}

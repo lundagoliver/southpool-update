@@ -23,7 +23,12 @@ public interface Member {
 	public String getTag();
 	public Integer getPostCount();
 	public String getAdmin();
-	public String getJoinGroup();
+	public long getStar();
+	public long getChatId();
+	public String getPageAccessToken();
+	public String getCreatePage();
+	public String getProfilePostId();
+	public String getProfilePostLink();
 	
 	public void setId(Long id);
 	public void setName(String name);
@@ -44,6 +49,11 @@ public interface Member {
 	public void setTag(String tag);
 	public void setPostCount(Integer postCount);
 	public void setAdmin(String admin);
-	public void setJoinGroup(String joinGroup);
+	public void setStar(long star);
+	public void setChatId(long chatId);
+	public void setPageAccessToken(String pageAccessToken);
+	public void setCreatePage(String createPage);
+	public void setProfilePostId(String profilePostId);
+	public void setProfilePostLink(String profilePostLink);
 	
 }

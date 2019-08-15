@@ -13,7 +13,7 @@ import com.systems.telegram.bot.southpool.utility.date.DateUtility;
 public class MemberValidation {
 
 	private MemberValidation(){}
-	
+
 	public static boolean isInfoNotComplete(Member southPoolMemberHomeToWork) {
 		if(southPoolMemberHomeToWork.getName() == null || 
 				southPoolMemberHomeToWork.getFacebookProfileLink() == null || 
@@ -31,7 +31,7 @@ public class MemberValidation {
 		}
 		return false;
 	}
-	
+
 	public static void updateUserPreviousMessage(PersistenceService persistenceService, Member previousMessage, String username, String tag) {
 		if (previousMessage == null) {
 			previousMessage = new PreviousMessage();
@@ -45,7 +45,7 @@ public class MemberValidation {
 			persistenceService.merge(previousMessage);
 		}	
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static String saveAndSendMessage(PersistenceService persistenceService, String botQuestion, PreviousMessage previousMessage, String username, @SuppressWarnings("rawtypes") Class clazz) {
 		previousMessage = (PreviousMessage) persistenceService.getMember(username, clazz);
@@ -61,24 +61,20 @@ public class MemberValidation {
 		}
 		return botQuestion;
 	}
-	
+
 	public static void updateUserChatId(PersistenceService persistenceService, long chatId, String username) {
-		
+
 		SouthPoolMemberHomeToWork southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 		SouthPoolMemberWorkToHome southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
-		
-		if (southPoolMemberHomeToWork != null && southPoolMemberWorkToHome != null) {	
-			if (southPoolMemberHomeToWork.getChatId() == null) {
-				southPoolMemberHomeToWork.setChatId(String.valueOf(chatId));
-				persistenceService.merge(southPoolMemberHomeToWork);	
-			}
-			if (southPoolMemberWorkToHome.getChatId() == null) {
-				southPoolMemberWorkToHome.setChatId(String.valueOf(chatId));
-				persistenceService.merge(southPoolMemberWorkToHome);	
-			}				
+
+		if (southPoolMemberHomeToWork != null && southPoolMemberWorkToHome != null) {
+			southPoolMemberHomeToWork.setChatId(chatId);
+			persistenceService.merge(southPoolMemberHomeToWork);
+			southPoolMemberWorkToHome.setChatId(chatId);
+			persistenceService.merge(southPoolMemberWorkToHome);
 		}
 	}
-	
+
 	public static void updateUserMemberETAandETDInfo(PersistenceService persistenceService, Member member) {
 		if (DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			String dateToday = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -107,7 +103,7 @@ public class MemberValidation {
 			persistenceService.merge(member);
 		}
 	}
-	
+
 	public static void updateUserMemberETAandETDInfoForTomorrow(PersistenceService persistenceService, Member member, String username) {
 		if (DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			String dateToday = DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -122,7 +118,7 @@ public class MemberValidation {
 			member.setEtd(etd);
 			persistenceService.merge(member);
 		}
-		
+
 		member = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
 		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isEqual(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			LocalDateTime localDateTimeETA = DateUtility.toLocaDateTime(member.getEta());
@@ -134,5 +130,5 @@ public class MemberValidation {
 			persistenceService.merge(member);
 		}
 	}
-	
+
 }

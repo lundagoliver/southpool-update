@@ -23,4 +23,8 @@ public class SouthPoolSettings {
 	
 	private String groupChatIdAdmins;
 	private String groupchatAdminsConcernSernderBot;
+	
+	private String commentBotToken;
+	private String commentBotUrl;
+	
 }

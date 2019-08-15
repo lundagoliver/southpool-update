@@ -44,6 +44,7 @@ public class CallbackCommands {
 	public static final String MY_LOCATION = "my_location";
 	public static final String MY_REMAINING_POST = "my_remaining_post";
 	public static final String JOIN_SP_GROUP = "join_sp_group";
+	public static final String JOIN_SP_DRIVERS_GROUP = "join_sp_drivers_group";
 	
 	public static final String TODAY_DRIVER = "driver_today";
 	public static final String TODAY_PASSENGER = "passenger_today";
@@ -53,6 +54,10 @@ public class CallbackCommands {
 	public static final String POST_AS_DRIVER_TOMORROW = "post_as_driver_tomorrow";
 	public static final String POST_AS_PASSENGER_TOMORROW = "post_as_passeneger_tomorrow";
 	
+	public static final String GIVE_STAR = "give_star_to_member";
+	
 	public static final String BOT_UPDATE = "bot_update";
+	public static final String CREATE_PROFILE = "create_profile";
+	public static final String PUBLISH_PROFILE = "publish_profile";
 	
 }

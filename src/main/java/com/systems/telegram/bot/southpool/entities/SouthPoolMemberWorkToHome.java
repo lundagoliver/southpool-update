@@ -92,10 +92,19 @@ public class SouthPoolMemberWorkToHome implements Serializable, Member {
 	private String admin;
 	
 	@Column(name="chat_id")
-	private String chatId;
+	private long chatId;
 	
-	@Column(name="join_group")
-	private String joinGroup;
+	@Column(name="page_access_token")
+	private String pageAccessToken;
+	
+	@Column(name="create_page")
+	private String createPage;
+	
+	@Column(name="profile_post_id")
+	private String profilePostId;
+	
+	@Column(name="profile_post_link")
+	private String profilePostLink;
 
 	@Transient
 	@Override
@@ -110,4 +119,17 @@ public class SouthPoolMemberWorkToHome implements Serializable, Member {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public long getStar() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setStar(long star) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

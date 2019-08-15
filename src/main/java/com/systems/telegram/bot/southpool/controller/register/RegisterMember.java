@@ -31,25 +31,35 @@ public class RegisterMember {
 		return answerCallbackQuery;
 	}
 	
+	public static AnswerCallbackQuery alreadyJoinedSPDL(CallbackQuery callBackQuery) {
+		AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+		answerCallbackQuery.setCallbackQueryId(callBackQuery.getId());
+		answerCallbackQuery.setShowAlert(true);
+		answerCallbackQuery.setText(ConstantMessage.ALREADY_SPDL_JOINED);
+		return answerCallbackQuery;
+	}
+	
 	public static InlineKeyboardBuilder registerUsername(PersistenceService persistenceService, SouthPoolMemberHomeToWork southPoolMemberHomeToWork, SouthPoolMemberWorkToHome southPoolMemberWorkToHome, long chatId, String username) {
 		if (southPoolMemberHomeToWork == null) {
 			southPoolMemberHomeToWork = new SouthPoolMemberHomeToWork();
 			southPoolMemberHomeToWork.setUsername(username);
-			southPoolMemberHomeToWork.setChatId(String.valueOf(chatId));
+			southPoolMemberHomeToWork.setChatId(chatId);
 			southPoolMemberHomeToWork.setPostCount(0);
 			southPoolMemberHomeToWork.setAllowed("Y");
 			southPoolMemberHomeToWork.setAdmin("N");
-			southPoolMemberHomeToWork.setChatId(String.valueOf(chatId));
+			southPoolMemberHomeToWork.setChatId(chatId);
+			southPoolMemberHomeToWork.setCreatePage("N");
 			persistenceService.persist(southPoolMemberHomeToWork);	
 		}
 		if (southPoolMemberWorkToHome == null) {
 			southPoolMemberWorkToHome = new SouthPoolMemberWorkToHome();
 			southPoolMemberWorkToHome.setUsername(username);
 			southPoolMemberWorkToHome.setPostCount(0);
-			southPoolMemberWorkToHome.setChatId(String.valueOf(chatId));
+			southPoolMemberWorkToHome.setChatId(chatId);
 			southPoolMemberWorkToHome.setAllowed("Y");
 			southPoolMemberWorkToHome.setAdmin("N");
-			southPoolMemberWorkToHome.setChatId(String.valueOf(chatId));
+			southPoolMemberWorkToHome.setChatId(chatId);
+			southPoolMemberWorkToHome.setCreatePage("N");
 			persistenceService.persist(southPoolMemberWorkToHome);	
 		}
 		

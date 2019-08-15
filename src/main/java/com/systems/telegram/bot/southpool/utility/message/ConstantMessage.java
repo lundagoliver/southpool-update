@@ -1,13 +1,21 @@
 package com.systems.telegram.bot.southpool.utility.message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import com.systems.telegram.bot.southpool.controller.comment.response.Comment;
+import com.systems.telegram.bot.southpool.entities.Followers;
 import com.systems.telegram.bot.southpool.entities.Member;
+import com.systems.telegram.bot.southpool.entities.MemberStar;
+import com.systems.telegram.bot.southpool.entities.SouthPoolMemberHomeToWork;
 import com.systems.telegram.bot.southpool.entities.SouthPoolMemberWorkToHome;
+import com.systems.telegram.bot.southpool.persistence.service.PersistenceService;
 import com.systems.telegram.bot.southpool.utility.callback.CallbackCommands;
 import com.systems.telegram.bot.southpool.utility.date.DateUtility;
 import com.systems.telegram.bot.southpool.utility.time.TimeUtility;
@@ -32,6 +40,7 @@ public class ConstantMessage {
 	
 	public static final String SET_USERNAME_MESSAGE_POP_UP = "Sorry, but you need to set your username first before you can use this service.\n\n";
 	public static final String ALREADY_JOINED = "You are already a member of SOUTHPOOL carpooling community.\n\n";
+	public static final String ALREADY_SPDL_JOINED = "You are already a member of Southpool Driver's Lounge community.\n\n";
 	public static final String SET_USERNAME_MESSAGE = "Sorry, but you need to set your username first before you can use this service.\n\n Please choose action:";
 	
 	public static final String SETUP_USERNAME_DONE_MESSAGE = " \nThen once you have done setting your telegram user name. You can proceed to member registration by clicking \"REGISTER\" button below.";
@@ -55,6 +64,7 @@ public class ConstantMessage {
 	public static final String UPDATED = "Kindly review your information before posting. Thank you!";
 	
 	public static final String VERIFY_MEMBER = "Enter the telegram username of the member that you want to verify :\n";
+	
 	public static final String PLEASE_CHOOSE_ACTION = "\nPlease Choose action:";
 	public static final String REPORT_TRAFFIC_STATUS = "Please enter any traffic related information that you want to share in the group.\n\n Example:\n oil price hike/rollback, traffic status or any MMDA operations:\n";
 	public static final String REPORT_POSTED = "Your report was successfully posted in SOUTHPOOL telegram group carpooling community.Thank you!\n\n";
@@ -74,7 +84,13 @@ public class ConstantMessage {
 	public static final String SEARCH_DRIVER = "Searching for DRIVER. Please wait...";
 	public static final String SEARCH_PASSENGER = "Searching for PASSENGER. Please wait...";
 	
+	public static final String GIVE_STAR_MESSAGE = "Enter the telegram username of the member that you want to give a star :\n";
+	
 	public static final String ADMIN_ONLY = "Only the administrators can ban a member. Please use \"Report a Member\" to report a member to Admins.Thank you!\n\n";
+	public static final String NOT_ALLOWED_TO_GIVE_STAR_ON_OWNSELF = "You were not allowed to give star on your ownself!\n\n";
+	public static final String SEND_STAR_SUCCESS = "Star was succefully sent to ";
+	
+	public static final String CREATE_PROFILE = "Send me one photo for your profile :\n";
 	
 	static List<String> notAvailable = new ArrayList<>();
 
@@ -131,6 +147,36 @@ public class ConstantMessage {
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
 		rowInline.add(new InlineKeyboardButton().setText(HOME2WORK).setCallbackData(CallbackCommands.HOME2WORK));
 		rowInline.add(new InlineKeyboardButton().setText(WORK2HOME).setCallbackData(CallbackCommands.WORK2HOME));
+		rowsInline.add(rowInline);
+		markupInline.setKeyboard(rowsInline);
+		return markupInline;
+	}
+	
+	public static InlineKeyboardMarkup openCreatePageLink(String url) {
+		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> rowInline = new ArrayList<>();
+		rowInline.add(new InlineKeyboardButton().setText("Upload Profile Photo").setUrl(url));
+		rowsInline.add(rowInline);
+		markupInline.setKeyboard(rowsInline);
+		return markupInline;
+	}
+	
+	public static InlineKeyboardMarkup openCommentPageLink(String url) {
+		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> rowInline = new ArrayList<>();
+		rowInline.add(new InlineKeyboardButton().setText("Review Member").setUrl(url));
+		rowsInline.add(rowInline);
+		markupInline.setKeyboard(rowsInline);
+		return markupInline;
+	}
+	
+	public static InlineKeyboardMarkup openMyCommentPageLink(String url) {
+		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> rowInline = new ArrayList<>();
+		rowInline.add(new InlineKeyboardButton().setText("My Profile").setUrl(url));
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -213,13 +259,34 @@ public class ConstantMessage {
 		return markupInline;
 	}
 	
-	public static String verifyMember(Member member) {
+	public static String verifyMember(Member member, long star, int followers) {
+		String stars = EmojiParser.parseToUnicode(":star:");
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String registered = dt.format(member.getRegisterDate());
 		StringBuilder sb = new StringBuilder();
-		sb.append("This member is verified as a " + member.getYouAre()).append("\n\n");
+		sb.append("@"+member.getUsername() + " is a verified southpool " + member.getYouAre()).append(" with <b>").append(star).append("</b>").append(" ").append(stars).append(".\n");
+		if (followers > 0) {
+			if (followers == 1) {
+				sb.append("Member since <b>" + registered).append("</b> with <b>").append(followers).append("</b> follower.");	
+			}
+			else {
+				sb.append("Member since <b>" + registered).append("</b> with <b>").append(followers).append("</b> followers.");	
+			}
+		}
+		else {
+			sb.append("Member since <b>" + registered).append("</b>");
+		}
 		return sb.toString();
 	}
 	
-	public static String showMyInformation(Member member, String account) {
+	public static String showMyInformation(Member member, String account, PersistenceService persistenceService) {
+		
+		Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+		uniqueConstraintNameValueMap.put("username", member.getUsername());
+		long starCount = 0;
+		if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberStar.class)) {
+			starCount = persistenceService.getMember(member.getUsername(), MemberStar.class).getStar();
+		}
 		
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
 		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
@@ -227,7 +294,7 @@ public class ConstantMessage {
 		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
 
 		String date = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.MM_DD);
-		String message = etaDate.contains("PM") ? " here later!" : " here for today!";
+		String message = etaDate.contains("PM") ? " here for later!" : " here for today!";
 
 		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			message = " here for tomorrow!";
@@ -249,13 +316,14 @@ public class ConstantMessage {
 		
 		
 		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
+		String star = EmojiParser.parseToUnicode(":star:");
 		StringBuilder sb = new StringBuilder();
-		sb.append(memberIcon).append("\n\n");
+		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
 		sb.append(account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
 		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
-		if (!notAvailable.contains(member.getMobileNumber())) {
-			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
-		}
+//		if (!notAvailable.contains(member.getMobileNumber())) {
+//			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
+//		}
 		if("DRIVER".equals(member.getYouAre()) && member.getAvailableSlots() != null) {
 			sb.append("├ Seat: ").append(member.getAvailableSlots()).append(" "+seat.toString()).append("\n");	
 		}
@@ -266,9 +334,9 @@ public class ConstantMessage {
 		if (!notAvailable.contains(member.getDropOffLoc())) {
 			sb.append("⊳<b> Drop Off: </b>").append(member.getDropOffLoc()+"").append("\n");	
 		}
-		if (!notAvailable.contains(member.getRoute())) {
-			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
-		}
+//		if (!notAvailable.contains(member.getRoute())) {
+//			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
+//		}
 		
 		if (!notAvailable.contains(member.getCustomMessage())) {
 			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
@@ -285,7 +353,7 @@ public class ConstantMessage {
 		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
 		String date = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.MM_DD);
 		
-		String message = etaDate.contains("PM") ? " here later!" : " here for today!";
+		String message = etaDate.contains("PM") ? " here for later!" : " here for today!";
 		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
 			message = " here for tomorrow!";
 		}
@@ -319,7 +387,7 @@ public class ConstantMessage {
 			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
 		}
 
-		sb.append("\n\n\nUnfollow >> /unfollow__"+member.getUsername()).append("\n\n");
+		sb.append("\nUnfollow >> /unfollow__"+member.getUsername()).append("\n\n");
 		sb.append("Start the Bot >> /start").append("\n");
 		return sb.toString();
 	}
@@ -347,15 +415,13 @@ public class ConstantMessage {
 		StringBuilder messageBuilder = new StringBuilder();
 		messageBuilder.append("Thank you for using @southpoolservicebot").append("\n");
 		messageBuilder.append("Contact if you have any questions, concerns or issues about the bot.\n");
-		messageBuilder.append("👤 Creator").append("\n");
-		messageBuilder.append("└ @mr_jump").append("\n");
+		messageBuilder.append("👤 Creators").append("\n");
+		messageBuilder.append("├ @mr_jump").append("\n");
+		messageBuilder.append("└ @mrs_jump").append("\n");
 		messageBuilder.append("👥 Admins").append("\n");
-		messageBuilder.append("├ @Jinopedro").append("\n");
-		messageBuilder.append("├ @b01nk3y").append("\n");
-		messageBuilder.append("├ @chicolors").append("\n");
-		messageBuilder.append("├ @mrs_jump").append("\n");
-		messageBuilder.append("├ @chaylandicho").append("\n");
 		messageBuilder.append("├ @Iej555").append("\n");
+		messageBuilder.append("├ @b01nk3y").append("\n");
+		messageBuilder.append("├ @Jinopedro").append("\n");
 		messageBuilder.append("└ @JeffMendoza").append("\n");
 		messageBuilder.append("\n");
 		messageBuilder.append("We'd love to hear all your feedback and suggestions.").append("\n");
@@ -386,5 +452,147 @@ public class ConstantMessage {
 		messageBuilder.append("\n");
 		messageBuilder.append("Thank you for your cooperation.\n");
 		return messageBuilder.toString();
+	}
+	
+	public static String showMyInformationWithComment(Comment comment, Member member, String account, PersistenceService persistenceService) {
+		
+		Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+		uniqueConstraintNameValueMap.put("username", member.getUsername());
+		long starCount = 0;
+		if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberStar.class)) {
+			starCount = persistenceService.getMember(member.getUsername(), MemberStar.class).getStar();
+		}
+		
+		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
+		String etdDate = DateUtility.toLocaDateTime(member.getEtd()).format(DateUtility.FORMAT_DATETIME_INFO);
+		String etaTime = TimeUtility.convertToStandardTime(etaDate.split(" ")[1],etaDate.split(" ")[2]);
+		String etdTime = TimeUtility.convertToStandardTime(etdDate.split(" ")[1],etdDate.split(" ")[2]);
+
+		String date = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.MM_DD);
+		String message = etaDate.contains("PM") ? " here for later!" : " here for today!";
+
+		if (DateUtility.toLocaDateTime(DateUtility.convertDateToGMT(8)).withHour(0).withMinute(0).withSecond(0).withNano(0).isBefore(DateUtility.toLocaDateTime(member.getEta()).withHour(0).withMinute(0).withSecond(0).withNano(0))) {
+			message = " here for tomorrow!";
+		}
+
+		int seatCount;
+		try {
+			seatCount = Integer.valueOf(member.getAvailableSlots());
+		}catch (Exception e) {
+			seatCount = 1;
+		}
+		
+		StringBuilder seat = new StringBuilder();
+		if (member.getAvailableSlots() != null) {
+			for (int i = 0; i<seatCount; i++) {
+				seat.append("💺");
+			}	
+		}
+		
+		
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
+		String star = EmojiParser.parseToUnicode(":star:");
+		StringBuilder sb = new StringBuilder();
+		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
+		sb.append(account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
+//		if (!notAvailable.contains(member.getMobileNumber())) {
+//			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
+//		}
+		if("DRIVER".equals(member.getYouAre()) && member.getAvailableSlots() != null) {
+			sb.append("├ Seat: ").append(member.getAvailableSlots()).append(" "+seat.toString()).append("\n");	
+		}
+		sb.append("└ ETD: ").append(etaTime +" - "+ etdTime).append("\n");
+		if (!notAvailable.contains(member.getPicUpLoc())) {
+			sb.append("\n⊳<b> Pick Up: </b>").append(member.getPicUpLoc()+"").append("\n");	
+		}
+		if (!notAvailable.contains(member.getDropOffLoc())) {
+			sb.append("⊳<b> Drop Off: </b>").append(member.getDropOffLoc()+"").append("\n");	
+		}
+//		if (!notAvailable.contains(member.getRoute())) {
+//			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
+//		}
+		
+		if (!notAvailable.contains(member.getCustomMessage())) {
+			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
+		}
+		
+		if (comment != null) {
+			if (comment.getOk()) {
+				sb.append("\n<a href=").append("\"").append(comment.getResult().getLink()).append("\">").append("comment</a>");	
+			}	
+		}
+		return sb.toString();
+	}
+	
+	
+	public static String showMyProfile(Member member, String account, PersistenceService persistenceService) {
+		
+		SouthPoolMemberHomeToWork southPoolMemberHomeToWork = persistenceService.getMember(member.getUsername(), SouthPoolMemberHomeToWork.class);
+		SouthPoolMemberWorkToHome southPoolMemberWorkToHome = persistenceService.getMember(member.getUsername(), SouthPoolMemberWorkToHome.class);
+		
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String registered = dt.format(member.getRegisterDate());
+		
+		Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
+		uniqueConstraintNameValueMap.put("username", member.getUsername());
+		uniqueConstraintNameValueMap.put("active", "Y");
+		List<Followers> followers = persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class);
+		int followerSize = followers.size();
+		
+		
+		
+		Map<String,String> uniqueConstraintNameValueMapStar = new HashMap<>();
+		uniqueConstraintNameValueMap.put("username", member.getUsername());
+		long starCount = 0;
+		if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMapStar, MemberStar.class)) {
+			starCount = persistenceService.getMember(member.getUsername(), MemberStar.class).getStar();
+		}		
+		
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
+		String star = EmojiParser.parseToUnicode(":star:");
+		StringBuilder sb = new StringBuilder();
+		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
+		sb.append("Account: <b>"+member.getYouAre()).append("</b>\n");
+		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
+		if (followerSize > 0) {
+			if (followerSize == 1) {
+				sb.append("Member since <b>" + registered).append("</b> with <b>").append(followerSize).append("</b> follower.\n");	
+			}
+			else {
+				sb.append("Member since <b>" + registered).append("</b> with <b>").append(followerSize).append("</b> followers.\n");	
+			}
+		}
+		else {
+			sb.append("Member since <b>" + registered).append("</b>\n\n");
+		}
+		
+		
+		sb.append("\n<b>").append(ConstantMessage.HOME2WORK).append("</b>");	
+		if (!notAvailable.contains(southPoolMemberHomeToWork.getPicUpLoc())) {
+			sb.append("\n⊳<b> Pick Up: </b>").append(southPoolMemberHomeToWork.getPicUpLoc()+"").append("\n");	
+		}
+		if (!notAvailable.contains(southPoolMemberHomeToWork.getDropOffLoc())) {
+			sb.append("⊳<b> Drop Off: </b>").append(southPoolMemberHomeToWork.getDropOffLoc()+"").append("\n");	
+		}
+		if (!notAvailable.contains(southPoolMemberHomeToWork.getRoute())) {
+			sb.append("⊳<b> Route: </b>").append(southPoolMemberHomeToWork.getRoute()+"").append("\n");	
+		}
+		
+		sb.append("\n<b>").append(ConstantMessage.WORK2HOME).append("</b>");	
+		if (!notAvailable.contains(southPoolMemberWorkToHome.getPicUpLoc())) {
+			sb.append("\n⊳<b> Pick Up: </b>").append(southPoolMemberWorkToHome.getPicUpLoc()+"").append("\n");	
+		}
+		if (!notAvailable.contains(southPoolMemberWorkToHome.getDropOffLoc())) {
+			sb.append("⊳<b> Drop Off: </b>").append(southPoolMemberWorkToHome.getDropOffLoc()+"").append("\n");	
+		}
+		if (!notAvailable.contains(southPoolMemberWorkToHome.getRoute())) {
+			sb.append("⊳<b> Route: </b>").append(southPoolMemberWorkToHome.getRoute()+"").append("\n");	
+		}
+		if (!notAvailable.contains(southPoolMemberWorkToHome.getCustomMessage())) {
+			sb.append("\n"+southPoolMemberWorkToHome.getCustomMessage()+"").append("\n");	
+		}
+
+		return sb.toString();
 	}
 }
