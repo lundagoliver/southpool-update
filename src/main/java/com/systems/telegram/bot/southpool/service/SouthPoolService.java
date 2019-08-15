@@ -51,7 +51,7 @@ public class SouthPoolService {
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);
 			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(request));
 			comment = restHttpClient.getDefaultRestTemplate().exchange(url, HttpMethod.POST, request, Comment.class).getBody();
-			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
+			log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(comment));
 		} catch (RestClientException e) {
 			log.error("error "+e);
 		} catch (JsonProcessingException e) {
