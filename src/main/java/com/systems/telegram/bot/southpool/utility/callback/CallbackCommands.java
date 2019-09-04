@@ -38,6 +38,7 @@ public class CallbackCommands {
 	public static final String VERIFY_MEMBER = "verify_member";
 	public static final String REPORT_TRAFFIC = "report_traffic";
 	public static final String BAN_MEMBER = "ban_member";
+	public static final String RESET_ACCOUNT = "reset_account";
 	public static final String COMPLAIN_MEMBER = "complain_member";
 	public static final String FOLLOW_MEMBER = "follow_member";
 	public static final String MY_FOLOWERS = "my_followers";

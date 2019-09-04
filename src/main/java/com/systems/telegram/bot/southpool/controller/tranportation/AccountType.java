@@ -32,6 +32,7 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Report Traffic Status", CallbackCommands.REPORT_TRAFFIC);
 		if("Y".equals(member.getAdmin())) {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Ban a Member", CallbackCommands.BAN_MEMBER);	
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Reset Account", CallbackCommands.RESET_ACCOUNT);
 		}
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report to Admins", CallbackCommands.COMPLAIN_MEMBER);
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER);
