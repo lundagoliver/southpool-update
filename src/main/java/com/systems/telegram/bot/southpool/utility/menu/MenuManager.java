@@ -14,9 +14,9 @@ public class MenuManager {
 	private int total;
 	private int lastPage;
 
-	private MenuItem btnPrev = new MenuItem(EmojiParser.parseToUnicode(":arrow_backward: Back"), PREV_ACTION);
-	private MenuItem btnNext = new MenuItem(EmojiParser.parseToUnicode(":arrow_forward: Next Page"), NEXT_ACTION);
-	private MenuItem btnCancel = new MenuItem(EmojiParser.parseToUnicode("HELP"), HELP);
+	private MenuItem btnPrev = new MenuItem(EmojiParser.parseToUnicode(":arrow_backward: Back"), PREV_ACTION,"");
+	private MenuItem btnNext = new MenuItem(EmojiParser.parseToUnicode(":arrow_forward: Next Page"), NEXT_ACTION,"");
+	private MenuItem btnCancel = new MenuItem(EmojiParser.parseToUnicode("HELP"), HELP,"");
 
 	private List<MenuItem> menu = new ArrayList<>();
 
@@ -36,8 +36,8 @@ public class MenuManager {
 		this.lastPage = (int) Math.ceil((double) total / buttonsPerPage) - 1;
 	}
 
-	public void addMenuItem(String name, String action) {
-		this.menu.add(new MenuItem(name, action));
+	public void addMenuItem(String name, String action, String url) {
+		this.menu.add(new MenuItem(name, action, url));
 	}
 
 	private List<MenuItem> getPage(int page) {
@@ -83,7 +83,7 @@ public class MenuManager {
 		int num = 0;
 		builder.row();
 		for (MenuItem button : pageButtons) {
-			builder.button(button.getName(), button.getAction());
+			builder.button(button.getName(), button.getAction(), button.getUrl());
 			if (++col >= columnsCount) {
 				col = 0;
 				builder.endRow();
@@ -97,11 +97,11 @@ public class MenuManager {
 		builder.row();
 		for (MenuItem button : controlButtons) {
 			if (button.getAction().equals(PREV_ACTION)) {
-				builder.button(button.getName(), button.getAction()+":"+(page-1));
+				builder.button(button.getName(), button.getAction()+":"+(page-1),button.getUrl());
 			} else if (button.getAction().equals(NEXT_ACTION)) {
-				builder.button(button.getName(), button.getAction()+":"+(page+1));
+				builder.button(button.getName(), button.getAction()+":"+(page+1),button.getUrl());
 			} else {
-				builder.button(button.getName(), button.getAction());
+				builder.button(button.getName(), button.getAction(),button.getUrl());
 			}
 		}
 		builder.endRow();

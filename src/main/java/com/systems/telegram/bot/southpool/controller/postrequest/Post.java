@@ -23,14 +23,14 @@ public class Post {
 		MenuManager menuManager = new MenuManager();
 		menuManager.setColumnsCount(1);
 		if (ConstantMessage.DRIVER.equals(member.getYouAre())) {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":taxi: ") + "Offer a Ride for Today", CallbackCommands.POST_AS_DRIVER);
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":taxi: ") + "Offer a Ride for Tomorrow", CallbackCommands.POST_AS_DRIVER_TOMORROW);
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":taxi: ") + "Offer a Ride for Today", CallbackCommands.POST_AS_DRIVER,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":taxi: ") + "Offer a Ride for Tomorrow", CallbackCommands.POST_AS_DRIVER_TOMORROW,"");
 		}
 		else {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +" Find a Ride for Today", CallbackCommands.POST_AS_PASSENGER);
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +" Find a Ride for Tomorrow", CallbackCommands.POST_AS_PASSENGER_TOMORROW);	
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +" Find a Ride for Today", CallbackCommands.POST_AS_PASSENGER,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":male_office_worker: ") +" Find a Ride for Tomorrow", CallbackCommands.POST_AS_PASSENGER_TOMORROW,"");	
 		}
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO);
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":information_source: ") + "My Accounts", CallbackCommands.SHOW_MEMBER_INFO,"");
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setParse("HTML")

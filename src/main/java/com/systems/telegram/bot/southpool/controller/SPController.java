@@ -1188,7 +1188,9 @@ public class SPController extends TelegramLongPollingBot {
 					Work2Home post = new Work2Home(ConstantMessage.WORK2HOME);
 					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
-				message.setText("<a href=\"https://t.me/joinchat/DGZqOhQGYvwDY_DM8lM2jQ\"> CLICK TO JOIN SOUTHPOOL GROUPHAT</a>");
+				message.setText(ConstantMessage.CLICK_TO_JOIN);
+//				message.setReplyMarkup(ConstantMessage.joinSouthPoolGroup("https://t.me/joinchat/DGZqOki3SR-nr_WgGxg4Kw"));
+				message.setReplyMarkup(ConstantMessage.joinSouthPoolGroup("https://t.me/joinchat/DGZqOhULGKGwUnquDIyQJg"));
 				sendMessage(message);
 				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
@@ -1212,7 +1214,8 @@ public class SPController extends TelegramLongPollingBot {
 					Work2Home post = new Work2Home(ConstantMessage.WORK2HOME);
 					replaceMessage(chatId, messageId, post.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 				}
-				message.setText("<a href=\"https://t.me/joinchat/DGZqOhPtRoP-Hp4PHb5vwQ\"> CLICK TO JOIN Southpool Driver's Lounge group chat.</a>");
+				message.setText(ConstantMessage.CLICK_TO_JOIN);
+				message.setReplyMarkup(ConstantMessage.joinSouthPoolDriverLoungeGroup("https://t.me/joinchat/DGZqOlW6iga9Lkn-hwk-Zw"));
 				sendMessage(message);
 				message.setText(ConstantMessage.ACCOUNT_MESSAGE);
 				message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());

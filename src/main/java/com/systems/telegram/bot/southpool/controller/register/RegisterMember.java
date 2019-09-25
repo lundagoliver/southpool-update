@@ -65,8 +65,8 @@ public class RegisterMember {
 		
 		MenuManager menuManager = new MenuManager();
 		menuManager.setColumnsCount(1);
-		menuManager.addMenuItem(ConstantMessage.HOME2WORK, CallbackCommands.HOME2WORK);
-		menuManager.addMenuItem(ConstantMessage.WORK2HOME, CallbackCommands.WORK2HOME);
+		menuManager.addMenuItem(ConstantMessage.HOME2WORK, CallbackCommands.HOME2WORK,"");
+		menuManager.addMenuItem(ConstantMessage.WORK2HOME, CallbackCommands.WORK2HOME,"");
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setChatId(chatId);

@@ -13,10 +13,10 @@ public class SetTelegramUserName {
 	
 		MenuManager menuManager = new MenuManager();
 		menuManager.setColumnsCount(3);
-		menuManager.addMenuItem(ConstantMessage.IOS, CallbackCommands.IOS);
-		menuManager.addMenuItem(ConstantMessage.ANDROID, CallbackCommands.ANDROID);
-		menuManager.addMenuItem(ConstantMessage.DESKTOP, CallbackCommands.DESKTOP);
-		menuManager.addMenuItem(ConstantMessage.REGISTER, CallbackCommands.REGISTER);
+		menuManager.addMenuItem(ConstantMessage.IOS, CallbackCommands.IOS,"https://www.wikihow.com/Know-a-Chat-ID-on-Telegram-on-iPhone-or-iPad");
+		menuManager.addMenuItem(ConstantMessage.ANDROID, CallbackCommands.ANDROID,"https://www.wikihow.com/Change-Your-Name-on-Telegram-on-Android");
+		menuManager.addMenuItem(ConstantMessage.DESKTOP, CallbackCommands.DESKTOP,"https://wavelet.atlassian.net/wiki/spaces/WMS/pages/21365027/How+to+change+username+in+Telegram");
+		menuManager.addMenuItem(ConstantMessage.REGISTER, CallbackCommands.REGISTER,"");
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
 		builder.setChatId(chatId);

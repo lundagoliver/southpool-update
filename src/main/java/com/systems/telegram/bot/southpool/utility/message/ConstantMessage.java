@@ -36,6 +36,7 @@ public class ConstantMessage {
 	public static final String HOME2WORK = "Home to Work";
 	public static final String WORK2HOME = "Work to Home";
 	
+	public static final String CLICK_TO_JOIN = "Click to join";
 	public static final String ACCOUNT_MESSAGE = "Please select which account you want to use:";
 	
 	public static final String SET_USERNAME_MESSAGE_POP_UP = "Sorry, but you need to set your username first before you can use this service.\n\n";
@@ -179,6 +180,26 @@ public class ConstantMessage {
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
 		rowInline.add(new InlineKeyboardButton().setText("My Profile").setUrl(url));
+		rowsInline.add(rowInline);
+		markupInline.setKeyboard(rowsInline);
+		return markupInline;
+	}
+	
+	public static InlineKeyboardMarkup joinSouthPoolGroup(String url) {
+		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> rowInline = new ArrayList<>();
+		rowInline.add(new InlineKeyboardButton().setText("Join SouthPool").setUrl(url));
+		rowsInline.add(rowInline);
+		markupInline.setKeyboard(rowsInline);
+		return markupInline;
+	}
+	
+	public static InlineKeyboardMarkup joinSouthPoolDriverLoungeGroup(String url) {
+		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> rowInline = new ArrayList<>();
+		rowInline.add(new InlineKeyboardButton().setText("Join SouthPool Driver's Lounge").setUrl(url));
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
