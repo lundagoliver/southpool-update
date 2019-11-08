@@ -73,8 +73,10 @@ public class ConstantMessage {
 	public static final String POSTED_COMPLAIN_MEMBER_PASSENGER_OR_DRIVER = "Your complain was successfully sent to the SOUTHPOOL administrators. Rest assured that this will be reviewed by the admins and will give necessary action to your concern. Thank you for your cooperation.\n";
 	public static final String BAN_MEMBER_TO_USE_THE_BOT = "Please enter the username of the member that you want to ban from using southpool :\n";
 	public static final String RESET_MEMBER_ACCOUNT = "Please enter the username of the member that you want to reset the account :\n";
+	public static final String RESET_MEMBER_REQUEST = "Please enter the username of the member that you want to reset the request count :\n";
 	public static final String BANNED = "User was successfully banned from using SOUTHPOOL telegram group carpooling community.Thank you!\n\n";
 	public static final String RESET = "User account was successfully reset!\n\n";
+	public static final String RESET_REQUEST = "User request count was successfully reset!\n\n";
 	public static final String FOLLOW_A_MEMBER = "Please enter the telegram username of the member that you want to follow :\n";
 	public static final String ALREADY_FOLLOWED = "You are already following this member.Thank you!\n\n";
 	public static final String FOLLOWED = "You have successfully followed this member. You will receive a notification whenever this member posted a request.Thank you!\n\n";

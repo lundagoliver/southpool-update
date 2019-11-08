@@ -405,6 +405,42 @@ public class SPController extends TelegramLongPollingBot {
 						message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
 						sendMessage(message);
 					}
+					
+					else if (ConstantMessage.RESET_MEMBER_REQUEST.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousUserMessage.getTag()) || 
+							ConstantMessage.RESET_MEMBER_REQUEST.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.WORK2HOME.equals(previousUserMessage.getTag())) {
+						
+						String user = messageText.contains("@") ? messageText.replaceAll("@", "") : messageText;
+						southPoolMemberHomeToWork = persistenceService.getMember(user, SouthPoolMemberHomeToWork.class);
+						southPoolMemberWorkToHome = persistenceService.getMember(user, SouthPoolMemberWorkToHome.class);
+						if (southPoolMemberHomeToWork == null || southPoolMemberWorkToHome == null) {
+							message.setText("User with username " + user + " does not exist!");
+							sendMessage(message);	
+						}
+						else {
+							southPoolMemberHomeToWork.setPostCount(0);
+							persistenceService.merge(southPoolMemberHomeToWork);
+							southPoolMemberWorkToHome.setPostCount(0);
+							persistenceService.merge(southPoolMemberWorkToHome);
+							
+							StringBuilder report = new StringBuilder();
+							report.append("<b>RESET REQUEST COUNT</>").append("\n\n");
+							report.append("Details : ").append("\n\n");
+							report.append("<i>").append(user + "'s request count was reset.").append("</i>\n\n");
+							report.append("Reset by: @"+username).append("\n");
+							try {
+								southPoolService.sendMessageToAdmin(report.toString(),southPoolSettings.getGroupChatIdAdmins(), southPoolSettings);
+							} catch (UnsupportedEncodingException e) {
+								log.error("{}", e);
+							}
+
+							String ok = EmojiParser.parseToUnicode(":white_check_mark:");
+							message.setText(ok+ConstantMessage.RESET_REQUEST);
+							sendMessage(message);
+						}
+						message.setText(ConstantMessage.ACCOUNT_MESSAGE);
+						message.setReplyMarkup(ConstantMessage.shownOptionsForWorkAndHomeInfo());
+						sendMessage(message);
+					}
 
 					else if (ConstantMessage.FOLLOW_A_MEMBER.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.HOME2WORK.equals(previousUserMessage.getTag()) || 
 							ConstantMessage.FOLLOW_A_MEMBER.equals(previousUserMessage.getPrevMessage()) && CallbackCommands.WORK2HOME.equals(previousUserMessage.getTag())) {
@@ -504,6 +540,7 @@ public class SPController extends TelegramLongPollingBot {
 							&& !ConstantMessage.COMPLAIN_MEMBER_PASSENGER_OR_DRIVER.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.BAN_MEMBER_TO_USE_THE_BOT.equals(previousUserMessage.getPrevMessage())
 							&& !ConstantMessage.RESET_MEMBER_ACCOUNT.equals(previousUserMessage.getPrevMessage())
+							&& !ConstantMessage.RESET_MEMBER_REQUEST.equals(previousUserMessage.getPrevMessage())
 							&& !ConstantMessage.REPORT_TRAFFIC_STATUS.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage())
@@ -520,10 +557,12 @@ public class SPController extends TelegramLongPollingBot {
 
 						}	
 					}
+					
 					else if (!ConstantMessage.FOLLOW_A_MEMBER.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.COMPLAIN_MEMBER_PASSENGER_OR_DRIVER.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.BAN_MEMBER_TO_USE_THE_BOT.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.RESET_MEMBER_ACCOUNT.equals(previousUserMessage.getPrevMessage())
+							&& !ConstantMessage.RESET_MEMBER_REQUEST.equals(previousUserMessage.getPrevMessage())
 							&& !ConstantMessage.REPORT_TRAFFIC_STATUS.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.VERIFY_MEMBER.equals(previousUserMessage.getPrevMessage()) 
 							&& !ConstantMessage.GIVE_STAR_MESSAGE.equals(previousUserMessage.getPrevMessage())
@@ -1101,6 +1140,21 @@ public class SPController extends TelegramLongPollingBot {
 				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
 				if ("Y".equalsIgnoreCase(southPoolMemberHomeToWork.getAdmin()) && "Y".equalsIgnoreCase(southPoolMemberWorkToHome.getAdmin())) {
 					botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.RESET_MEMBER_ACCOUNT, previousMessage, username, PreviousMessage.class);
+					message.setText(botQuestion);
+					sendMessage(message);	
+				}
+				else {
+					String x = EmojiParser.parseToUnicode(":x:");
+					answerCallbackQuery.setText(x+ConstantMessage.ADMIN_ONLY);
+					sendMessage(answerCallbackQuery);
+				}
+				break;
+				
+			case CallbackCommands.RESET_REQUEST:
+				southPoolMemberHomeToWork = persistenceService.getMember(username, SouthPoolMemberHomeToWork.class);
+				southPoolMemberWorkToHome = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);
+				if ("Y".equalsIgnoreCase(southPoolMemberHomeToWork.getAdmin()) && "Y".equalsIgnoreCase(southPoolMemberWorkToHome.getAdmin())) {
+					botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.RESET_MEMBER_REQUEST, previousMessage, username, PreviousMessage.class);
 					message.setText(botQuestion);
 					sendMessage(message);	
 				}
