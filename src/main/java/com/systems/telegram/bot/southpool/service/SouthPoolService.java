@@ -186,7 +186,9 @@ public class SouthPoolService {
 			param.add("api_key", southPoolSettings.getCommentBotToken());
 			param.add("owner_id", String.valueOf(userChatId));
 			param.add("type", "photo");
-			param.add("photo_url", photoURL);
+			if (photoURL!=null) {
+				param.add("photo_url", photoURL);	
+			}
 			param.add("parse_mode", "HTML");
 			param.add("caption", text.replace("&", "and"));
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(param, null);

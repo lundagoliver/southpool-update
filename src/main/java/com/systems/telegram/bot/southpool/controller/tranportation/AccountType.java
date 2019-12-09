@@ -32,15 +32,15 @@ public abstract class AccountType {
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Report Traffic Status", CallbackCommands.REPORT_TRAFFIC,"");
 		if("Y".equals(member.getAdmin())) {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Ban a Member", CallbackCommands.BAN_MEMBER,"");	
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Reset Account", CallbackCommands.RESET_ACCOUNT,"");
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Reset Request", CallbackCommands.RESET_REQUEST,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":recycle: ") + "Reset Account", CallbackCommands.RESET_ACCOUNT,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":repeat: ") + "Reset Request", CallbackCommands.RESET_REQUEST,"");
 		}
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report to Admins", CallbackCommands.COMPLAIN_MEMBER,"");
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER,"");
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS,"");
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION,"");
 		if (!MemberValidation.isInfoNotComplete(member)) {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":key: ") + "Join SP Group", CallbackCommands.JOIN_SP_GROUP,"https://t.me/joinchat/DGZqOhULGKGwUnquDIyQJg");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":key: ") + "Join SP Group", CallbackCommands.JOIN_SP_GROUP,"https://t.me/joinchat/DGZqOkZ9w-klIrqFlNkO7A");
 		}
 		
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "Send Star To a Member", CallbackCommands.GIVE_STAR,"");
@@ -52,7 +52,7 @@ public abstract class AccountType {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":file_folder: ") + "Create Profile", CallbackCommands.CREATE_PROFILE,"");	
 		}
 		else {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":file_folder: ") + "Publish Profile", CallbackCommands.PUBLISH_PROFILE,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":bust_in_silhouette: ") + "Publish Profile", CallbackCommands.PUBLISH_PROFILE,"");
 		}
 		
 		

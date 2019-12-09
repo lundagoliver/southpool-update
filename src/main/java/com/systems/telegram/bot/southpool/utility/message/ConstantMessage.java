@@ -339,12 +339,16 @@ public class ConstantMessage {
 			}	
 		}
 		
+		String home2Work = EmojiParser.parseToUnicode(":house: ")+EmojiParser.parseToUnicode(":arrow_right: ")+EmojiParser.parseToUnicode(":office:");
+		String work2Home = EmojiParser.parseToUnicode(":house: ")+EmojiParser.parseToUnicode(":arrow_left: ")+EmojiParser.parseToUnicode(":office:");
+		
+		String accountIcon = "Work to Home".equals(account) ? work2Home : home2Work;
 		
 		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
 		String star = EmojiParser.parseToUnicode(":star:");
 		StringBuilder sb = new StringBuilder();
 		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
-		sb.append(account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append(accountIcon+"\n"+account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
 		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
 //		if (!notAvailable.contains(member.getMobileNumber())) {
 //			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
@@ -388,8 +392,13 @@ public class ConstantMessage {
 			account = ConstantMessage.WORK2HOME;
 		}
 		
+		String home2Work = EmojiParser.parseToUnicode(":house: ")+EmojiParser.parseToUnicode(":arrow_right: ")+EmojiParser.parseToUnicode(":office:");
+		String work2Home = EmojiParser.parseToUnicode(":house: ")+EmojiParser.parseToUnicode(":arrow_left: ")+EmojiParser.parseToUnicode(":office:");
+		
+		String accountIcon = "Work to Home".equals(account) ? work2Home : home2Work;
+		
 		StringBuilder sb = new StringBuilder();
-		sb.append(account+" ⊳  "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append(accountIcon+"\n"+account+" ⊳  "+member.getYouAre()).append(message+" "+ date).append("\n");
 		sb.append("@"+member.getUsername()).append("\n");
 		if (!notAvailable.contains(member.getMobileNumber())) {
 			sb.append("├<b> Mobile: </b>").append(member.getMobileNumber()).append("\n");	
@@ -435,7 +444,19 @@ public class ConstantMessage {
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
 	}
-
+	
+	public static String showCreateProfileSteps() {
+		StringBuilder messageBuilder = new StringBuilder();
+		messageBuilder.append("Steps on how to create a southpool profile:").append("\n");
+		messageBuilder.append("1. Search and add @CommentsBot to your telegram contact. kindly type /start in @CommentsBot chat window then enter.").append("\n");
+		messageBuilder.append("2. Go back to @southpoolservicebot then click 'My Account' button -  choose either 'Work to Home' or 'Home to Work' then click 'Create Profile' button.").append("\n");
+		messageBuilder.append("3. Click 'Upload Profile Photo' button - an external site will open, complete your profile and add photo then click 'Publish'. After that, go back to @southpoolservicebot again.").append("\n");
+		messageBuilder.append("5. Click 'My Account' button -  choose either 'Work to Home' or 'Home to Work'. The Publish profile button should appear.").append("\n");
+		messageBuilder.append("6. Click 'Publish Profile' button - If it goes through, the 'My Profile' button should appear else, contact the admins for help.").append("\n");
+		messageBuilder.append("7. Click 'My Profile' - You should see profile after clicking 'My Profile'.").append("\n");
+		return messageBuilder.toString();
+	}
+	
 	public static String showThankYou() {
 		StringBuilder messageBuilder = new StringBuilder();
 		messageBuilder.append("Thank you for using @southpoolservicebot").append("\n");
@@ -513,13 +534,18 @@ public class ConstantMessage {
 				seat.append("💺");
 			}	
 		}
+		String rightArrow = EmojiParser.parseToUnicode(":arrow_right: ");
+		String leftArrow = EmojiParser.parseToUnicode(":arrow_left: ");
+		String home2Work = EmojiParser.parseToUnicode(":house: ")+rightArrow+rightArrow+EmojiParser.parseToUnicode(":office:");
+		String work2Home = EmojiParser.parseToUnicode(":house: ")+leftArrow+leftArrow+EmojiParser.parseToUnicode(":office:");
 		
+		String accountIcon = "Work to Home".equals(account) ? work2Home : home2Work;
 		
-		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
+		String memberIcon = DRIVER.equals(member.getYouAre()) ? EmojiParser.parseToUnicode(":oncoming_automobile:") : EmojiParser.parseToUnicode(":running:");
 		String star = EmojiParser.parseToUnicode(":star:");
 		StringBuilder sb = new StringBuilder();
 		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
-		sb.append(account+" : "+member.getYouAre()).append(message+" "+ date).append("\n");
+		sb.append(accountIcon+" "+account+"\n"+member.getYouAre()).append(message+" "+ date).append("\n");
 		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
 //		if (!notAvailable.contains(member.getMobileNumber())) {
 //			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
@@ -544,7 +570,11 @@ public class ConstantMessage {
 		
 		if (comment != null) {
 			if (comment.getOk()) {
-				sb.append("\n<a href=").append("\"").append(comment.getResult().getLink()).append("\">").append("comment</a>");	
+				sb.append("\n<a href=").append("\"").append(comment.getResult().getLink()).append("\">").append(EmojiParser.parseToUnicode(":calling:")).append("comment</a>");
+				if (member.getProfilePostLink() != null) {
+					sb.append("<a href=").append("\"").append(member.getProfilePostLink()).append("\">").append("\t"+EmojiParser.parseToUnicode(":bust_in_silhouette:")).append("profile</a>");	
+				}
+					
 			}	
 		}
 		return sb.toString();
@@ -565,14 +595,9 @@ public class ConstantMessage {
 		List<Followers> followers = persistenceService.getFolowerBy(uniqueConstraintNameValueMap, Followers.class);
 		int followerSize = followers.size();
 		
-		
-		
 		Map<String,String> uniqueConstraintNameValueMapStar = new HashMap<>();
 		uniqueConstraintNameValueMap.put("username", member.getUsername());
-		long starCount = 0;
-		if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMapStar, MemberStar.class)) {
-			starCount = persistenceService.getMember(member.getUsername(), MemberStar.class).getStar();
-		}		
+		long starCount = persistenceService.getMembersBy(uniqueConstraintNameValueMapStar, MemberStar.class).isEmpty() ? 0 : persistenceService.getMembersBy(uniqueConstraintNameValueMapStar, MemberStar.class).get(0).getStar();
 		
 		String memberIcon = DRIVER.equals(member.getYouAre()) ? "🚘" : "😊";
 		String star = EmojiParser.parseToUnicode(":star:");
