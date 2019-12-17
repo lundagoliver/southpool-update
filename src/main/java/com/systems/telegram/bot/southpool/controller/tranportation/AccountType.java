@@ -44,8 +44,9 @@ public abstract class AccountType {
 		}
 		
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "Send Star To a Member", CallbackCommands.GIVE_STAR,"");
+		
 		if (!MemberValidation.isInfoNotComplete(member) && ("DRIVER".equals(member.getYouAre()))) {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":car: ") + "Join Southpool Driver's Lounge", CallbackCommands.JOIN_SP_DRIVERS_GROUP,"https://t.me/joinchat/DGZqOlW6iga9Lkn-hwk-Zw");	
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":car: ") + "Join SP's Lounge", CallbackCommands.JOIN_SP_DRIVERS_GROUP,"https://t.me/joinchat/DGZqOlW6iga9Lkn-hwk-Zw");	
 		}
 		
 		if ("N".equals(member.getCreatePage())) {
@@ -54,7 +55,8 @@ public abstract class AccountType {
 		else {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":bust_in_silhouette: ") + "Publish Profile", CallbackCommands.PUBLISH_PROFILE,"");
 		}
-		
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":-1: ") + "Unlike a Member", CallbackCommands.UNLIKE_MEMBER,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":eight_spoked_asterisk: ") + "Covert " + EmojiParser.parseToUnicode(":star: ") + " to " + EmojiParser.parseToUnicode(":bird:") + " Post Request", CallbackCommands.CONVERT_STAR_TO_POST_REQUEST,"");
 		
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);

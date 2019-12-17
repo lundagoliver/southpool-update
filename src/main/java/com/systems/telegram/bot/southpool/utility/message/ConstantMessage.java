@@ -90,10 +90,16 @@ public class ConstantMessage {
 	public static final String SEARCH_PASSENGER = "Searching for PASSENGER. Please wait...";
 	
 	public static final String GIVE_STAR_MESSAGE = "Enter the telegram username of the member that you want to give a star :\n";
+	public static final String UNLIKE_MEMBER_MESSAGE = "Enter the telegram username of the member that you want to unlike :\n";
+	public static final String CONVERT_STAR_MESSAGE = "How many stars would you like to convert to post request? (1 star is equal to 1 post request) :\n";
 	
 	public static final String ADMIN_ONLY = "Only the administrators can ban a member. Please use \"Report a Member\" to report a member to Admins.Thank you!\n\n";
 	public static final String NOT_ALLOWED_TO_GIVE_STAR_ON_OWNSELF = "You were not allowed to give star on your ownself!\n\n";
+	public static final String NOT_ALLOWED_TO_UNLIKE_YOUR_OWNSELF = "You were not allowed to unlike your ownself!\n\n";
 	public static final String SEND_STAR_SUCCESS = "Star was succefully sent to ";
+	public static final String SEND_UNLIKE_SUCCESS = "Done!";
+	
+	public static final String CONVERSION_SUCCESS = "Stars to Post Request Count was succefully converted!";
 	
 	public static final String CREATE_PROFILE = "Send me one photo for your profile :\n";
 	
@@ -505,8 +511,11 @@ public class ConstantMessage {
 		Map<String,String> uniqueConstraintNameValueMap = new HashMap<>();
 		uniqueConstraintNameValueMap.put("username", member.getUsername());
 		long starCount = 0;
+		long unlikes = 0;
+		
 		if (persistenceService.findByUniqueConstraint(uniqueConstraintNameValueMap, MemberStar.class)) {
 			starCount = persistenceService.getMember(member.getUsername(), MemberStar.class).getStar();
+			unlikes = persistenceService.getMember(member.getUsername(), MemberStar.class).getUnlike();
 		}
 		
 		String etaDate = DateUtility.toLocaDateTime(member.getEta()).format(DateUtility.FORMAT_DATETIME_INFO);
@@ -543,13 +552,11 @@ public class ConstantMessage {
 		
 		String memberIcon = DRIVER.equals(member.getYouAre()) ? EmojiParser.parseToUnicode(":oncoming_automobile:") : EmojiParser.parseToUnicode(":running:");
 		String star = EmojiParser.parseToUnicode(":star:");
+		String unlike = EmojiParser.parseToUnicode(":-1:");
 		StringBuilder sb = new StringBuilder();
-		sb.append(memberIcon).append(" : " + star + " " + starCount).append("\n");
+		sb.append(memberIcon).append(" : " + star + " " + starCount + " : " ).append(unlike + " " + unlikes).append("\n");
 		sb.append(accountIcon+" "+account+"\n"+member.getYouAre()).append(message+" "+ date).append("\n");
-		sb.append("@"+member.getUsername() + " - " + member.getName()).append("\n");
-//		if (!notAvailable.contains(member.getMobileNumber())) {
-//			sb.append("├ Mobile: ").append(member.getMobileNumber()).append("\n");	
-//		}
+		sb.append("<a href=").append("\"").append(member.getProfilePostLink()).append("\">").append("\t"+EmojiParser.parseToUnicode(":bust_in_silhouette:")).append("@"+member.getUsername()+"</a>").append(" - " + member.getName()).append("\n");
 		if("DRIVER".equals(member.getYouAre()) && member.getAvailableSlots() != null) {
 			sb.append("├ Seat: ").append(member.getAvailableSlots()).append(" "+seat.toString()).append("\n");	
 		}
@@ -560,14 +567,12 @@ public class ConstantMessage {
 		if (!notAvailable.contains(member.getDropOffLoc())) {
 			sb.append("⊳<b> Drop Off: </b>").append(member.getDropOffLoc()+"").append("\n");	
 		}
-//		if (!notAvailable.contains(member.getRoute())) {
-//			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
-//		}
-		
+		if (!notAvailable.contains(member.getRoute())) {
+			sb.append("⊳<b> Route: </b>").append(member.getRoute()+"").append("\n");	
+		}
 		if (!notAvailable.contains(member.getCustomMessage())) {
 			sb.append("\n"+member.getCustomMessage()+"").append("\n");	
 		}
-		
 		if (comment != null) {
 			if (comment.getOk()) {
 				sb.append("\n<a href=").append("\"").append(comment.getResult().getLink()).append("\">").append(EmojiParser.parseToUnicode(":calling:")).append("comment</a>");

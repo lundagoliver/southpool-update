@@ -63,4 +63,7 @@ public class CallbackCommands {
 	public static final String CREATE_PROFILE = "create_profile";
 	public static final String PUBLISH_PROFILE = "publish_profile";
 	
+	public static final String UNLIKE_MEMBER = "unlike_member";
+	public static final String CONVERT_STAR_TO_POST_REQUEST = "convert_star";
+	
 }

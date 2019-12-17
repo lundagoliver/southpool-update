@@ -35,6 +35,9 @@ public class MemberStar implements Serializable, Member {
 	
 	@Column(name="star")
 	private long star;
+	
+	@Column(name="unlike")
+	private long unlike;
 
 	@Override
 	public Long getId() {
@@ -311,4 +314,6 @@ public class MemberStar implements Serializable, Member {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 }
