@@ -57,7 +57,7 @@ public abstract class AccountType {
 		}
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":-1: ") + "Unlike a Member", CallbackCommands.UNLIKE_MEMBER,"");
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":eight_spoked_asterisk: ") + "Covert " + EmojiParser.parseToUnicode(":star: ") + " to " + EmojiParser.parseToUnicode(":bird:") + " Post Request", CallbackCommands.CONVERT_STAR_TO_POST_REQUEST,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":heart: ") + "Donate", CallbackCommands.UNLIKE_MEMBER,"https://telegra.ph/SOUTHPOOL-SERVICE-DONATION-10-26");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":heart: ") + "Donate", CallbackCommands.DONATE,"https://telegra.ph/SOUTHPOOL-SERVICE-DONATION-10-26");
 		
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);
