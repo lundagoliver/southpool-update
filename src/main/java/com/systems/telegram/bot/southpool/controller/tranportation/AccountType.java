@@ -29,27 +29,24 @@ public abstract class AccountType {
 		if (!MemberValidation.isInfoNotComplete(member)) {			
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":bird: ") + "Request - " + (5 - member.getPostCount()), CallbackCommands.POST_REQUEST,"");
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":heart: ") + "Donate", CallbackCommands.DONATE,"https://telegra.ph/SOUTHPOOL-SERVICE-DONATION-10-26");
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":key: ") + "Join SP Group", CallbackCommands.JOIN_SP_GROUP,"https://t.me/joinchat/DGZqOkZ9w-klIrqFlNkO7A");
-		}
-		
-		if (!MemberValidation.isInfoNotComplete(member) && ("DRIVER".equals(member.getYouAre()))) {
-			menuManager.addMenuItem(EmojiParser.parseToUnicode(":car: ") + "Join SP's Lounge", CallbackCommands.JOIN_SP_DRIVERS_GROUP,"https://t.me/joinchat/DGZqOlW6iga9Lkn-hwk-Zw");
-		}
-		
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":mag_right: ") + "Search", CallbackCommands.SEARCH_POST,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":white_check_mark: ") + "Verify a Member", CallbackCommands.VERIFY_MEMBER,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Report Traffic Status", CallbackCommands.REPORT_TRAFFIC,"");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":key: ") + "SP Group", CallbackCommands.JOIN_SP_GROUP,"https://t.me/joinchat/DGZqOkZ9w-klIrqFlNkO7A");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":car: ") + "SP's Lounge", CallbackCommands.JOIN_SP_DRIVERS_GROUP,"https://t.me/joinchat/DGZqOlW6iga9Lkn-hwk-Zw");
+			menuManager.addMenuItem(EmojiParser.parseToUnicode(":shopping_cart: ") + "SP's Market Place", CallbackCommands.JOIN_SP_MARKET_PLACE,"https://t.me/joinchat/DGZqOlRXIj9F-uJaHvhjzw");
+		}		
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":mag_right: ") + "Find Ride/Passenger", CallbackCommands.SEARCH_POST,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":white_check_mark: ") + "Verify Member", CallbackCommands.VERIFY_MEMBER,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":traffic_light: ") + "Traffic Status", CallbackCommands.REPORT_TRAFFIC,"");
 		if("Y".equals(member.getAdmin())) {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":no_mobile_phones: ") + "Ban a Member", CallbackCommands.BAN_MEMBER,"");	
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":recycle: ") + "Reset Account", CallbackCommands.RESET_ACCOUNT,"");
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":repeat: ") + "Reset Request", CallbackCommands.RESET_REQUEST,"");
 		}
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":interrobang: ") + "Report to Admins", CallbackCommands.COMPLAIN_MEMBER,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow a Member", CallbackCommands.FOLLOW_MEMBER,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":+1: ") + "Follow Member", CallbackCommands.FOLLOW_MEMBER,"");
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "My Followers", CallbackCommands.MY_FOLOWERS,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "My Location", CallbackCommands.MY_LOCATION,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":triangular_flag_on_post: ") + "Share Location", CallbackCommands.MY_LOCATION,"");
 		
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "Send Star To a Member", CallbackCommands.GIVE_STAR,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":star: ") + "Star a Member", CallbackCommands.GIVE_STAR,"");
 		
 		if ("N".equals(member.getCreatePage())) {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":file_folder: ") + "Create Profile", CallbackCommands.CREATE_PROFILE,"");	
@@ -58,7 +55,7 @@ public abstract class AccountType {
 			menuManager.addMenuItem(EmojiParser.parseToUnicode(":bust_in_silhouette: ") + "Publish Profile", CallbackCommands.PUBLISH_PROFILE,"");
 		}
 		menuManager.addMenuItem(EmojiParser.parseToUnicode(":-1: ") + "Unlike a Member", CallbackCommands.UNLIKE_MEMBER,"");
-		menuManager.addMenuItem(EmojiParser.parseToUnicode(":eight_spoked_asterisk: ") + "Covert " + EmojiParser.parseToUnicode(":star: ") + " to " + EmojiParser.parseToUnicode(":bird:") + " Post Request", CallbackCommands.CONVERT_STAR_TO_POST_REQUEST,"");
+		menuManager.addMenuItem(EmojiParser.parseToUnicode(":eight_spoked_asterisk: ") + "Covert " + EmojiParser.parseToUnicode(":star: ") + " to " + EmojiParser.parseToUnicode(":bird:") + " Post", CallbackCommands.CONVERT_STAR_TO_POST_REQUEST,"");
 				
 		menuManager.init();
 		InlineKeyboardBuilder builder = menuManager.createMenuForPage(0, true);

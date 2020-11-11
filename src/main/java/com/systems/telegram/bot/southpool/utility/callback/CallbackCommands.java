@@ -48,6 +48,7 @@ public class CallbackCommands {
 	public static final String MY_REMAINING_POST = "my_remaining_post";
 	public static final String JOIN_SP_GROUP = "join_sp_group";
 	public static final String JOIN_SP_DRIVERS_GROUP = "join_sp_drivers_group";
+	public static final String JOIN_SP_MARKET_PLACE = "join_sp_market_place";
 	
 	public static final String TODAY_DRIVER = "driver_today";
 	public static final String TODAY_PASSENGER = "passenger_today";
