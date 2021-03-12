@@ -556,7 +556,7 @@ public class ConstantMessage {
 		StringBuilder sb = new StringBuilder();
 		sb.append(memberIcon).append(" : " + star + " " + starCount + " : " ).append(unlike + " " + unlikes).append("\n");
 		sb.append(accountIcon+" "+account+"\n"+member.getYouAre()).append(message+" "+ date).append("\n");
-		sb.append("<a href=").append("\"").append(member.getProfilePostLink()).append("\">").append("\t"+EmojiParser.parseToUnicode(":bust_in_silhouette:")).append("@"+member.getUsername()+"</a>").append(" - " + member.getName()).append("\n");
+		sb.append(EmojiParser.parseToUnicode(":bust_in_silhouette:")).append("@"+member.getUsername()).append(" - " + member.getName()).append("\n");
 		if("DRIVER".equals(member.getYouAre()) && member.getAvailableSlots() != null) {
 			sb.append("├ Seat: ").append(member.getAvailableSlots()).append(" "+seat.toString()).append("\n");	
 		}
@@ -579,7 +579,7 @@ public class ConstantMessage {
 				if (member.getProfilePostLink() != null) {
 					sb.append("<a href=").append("\"").append(member.getProfilePostLink()).append("\">").append("\t"+EmojiParser.parseToUnicode(":bust_in_silhouette:")).append("profile</a>");	
 				}
-					
+				sb.append("\n"+EmojiParser.parseToUnicode(":oncoming_automobile:")).append(" @southpoolservicebot");	
 			}	
 		}
 		return sb.toString();
