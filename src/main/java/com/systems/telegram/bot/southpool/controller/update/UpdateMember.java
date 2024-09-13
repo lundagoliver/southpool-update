@@ -50,7 +50,7 @@ public class UpdateMember {
 		case CallbackCommands.SET_CAR_PLATE:
 			botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.ENTER_CAR_PLATE_NUMBER, previousMessage, username, PreviousMessage.class);
 			message.setText(botQuestion);
-			return message.setText(botQuestion);
+			return message;
 
 		case CallbackCommands.SET_YOU_ARE:
 			botQuestion = MemberValidation.saveAndSendMessage(persistenceService, ConstantMessage.ENTER_WHAT_TYPE_OF_USER_YOU_ARE, previousMessage, username, PreviousMessage.class);
@@ -74,7 +74,8 @@ public class UpdateMember {
 			return message;
 
 		case CallbackCommands.SET_AVAILABLE_SEAT:
-			SendMessage seatMessage = new SendMessage().setChatId(chatId);
+			SendMessage seatMessage = new SendMessage();
+			seatMessage.setChatId(chatId);
 			ReplyKeyboardMarkup seatReplyKeyboardMarkup = new ReplyKeyboardMarkup();
 			seatMessage.setReplyMarkup(seatReplyKeyboardMarkup);
 			seatReplyKeyboardMarkup.setSelective(true);
@@ -86,7 +87,8 @@ public class UpdateMember {
 			return seatMessage;
 
 		case CallbackCommands.SET_ETA:
-			SendMessage etaMessage = new SendMessage().setChatId(chatId);
+			SendMessage etaMessage = new SendMessage();
+			etaMessage.setChatId(chatId);
 			ReplyKeyboardMarkup etaReplyKeyboardMarkup = new ReplyKeyboardMarkup();
 			etaMessage.setReplyMarkup(etaReplyKeyboardMarkup);
 			etaReplyKeyboardMarkup.setSelective(true);
@@ -98,7 +100,8 @@ public class UpdateMember {
 			return etaMessage;
 
 		case CallbackCommands.SET_ETD:
-			SendMessage etdMessage = new SendMessage().setChatId(chatId);
+			SendMessage etdMessage = new SendMessage();
+			etdMessage.setChatId(chatId);
 			ReplyKeyboardMarkup etdReplyKeyboardMarkup = new ReplyKeyboardMarkup();
 			etdMessage.setReplyMarkup(etdReplyKeyboardMarkup);
 			etdReplyKeyboardMarkup.setSelective(true);

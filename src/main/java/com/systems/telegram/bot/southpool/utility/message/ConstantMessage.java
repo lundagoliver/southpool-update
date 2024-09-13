@@ -144,9 +144,22 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText(IOS).setCallbackData(CallbackCommands.IOS));
-		rowInline.add(new InlineKeyboardButton().setText(ANDROID).setCallbackData(CallbackCommands.ANDROID));
-		rowInline.add(new InlineKeyboardButton().setText(DESKTOP).setCallbackData(CallbackCommands.DESKTOP));
+		
+		InlineKeyboardButton ios = new InlineKeyboardButton();
+		ios.setText(IOS);
+		ios.setCallbackData(CallbackCommands.IOS);
+		
+		InlineKeyboardButton android = new InlineKeyboardButton();
+		ios.setText(ANDROID);
+		ios.setCallbackData(CallbackCommands.ANDROID);
+		
+		InlineKeyboardButton desktop = new InlineKeyboardButton();
+		desktop.setText(DESKTOP);
+		desktop.setCallbackData(CallbackCommands.DESKTOP);
+		
+		rowInline.add(ios);
+		rowInline.add(android);
+		rowInline.add(desktop);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -156,8 +169,17 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText(HOME2WORK).setCallbackData(CallbackCommands.HOME2WORK));
-		rowInline.add(new InlineKeyboardButton().setText(WORK2HOME).setCallbackData(CallbackCommands.WORK2HOME));
+		
+		InlineKeyboardButton h2w = new InlineKeyboardButton();
+		h2w.setText(HOME2WORK);
+		h2w.setCallbackData(CallbackCommands.HOME2WORK);
+		
+		InlineKeyboardButton w2h = new InlineKeyboardButton();
+		w2h.setText(WORK2HOME);
+		w2h.setCallbackData(CallbackCommands.WORK2HOME);
+		
+		rowInline.add(h2w);
+		rowInline.add(w2h);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -167,7 +189,11 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("Upload Profile Photo").setUrl(url));
+		
+		InlineKeyboardButton upp = new InlineKeyboardButton();
+		upp.setText("Upload Profile Photo");
+		upp.setUrl(url);
+		rowInline.add(upp);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -177,7 +203,10 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("Review Member").setUrl(url));
+		InlineKeyboardButton rw = new InlineKeyboardButton();
+		rw.setText("Review Member");
+		rw.setUrl(url);
+		rowInline.add(rw);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -187,7 +216,10 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("My Profile").setUrl(url));
+		InlineKeyboardButton mp = new InlineKeyboardButton();
+		mp.setText("My Profile");
+		mp.setUrl(url);
+		rowInline.add(new InlineKeyboardButton());
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -197,7 +229,10 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("Join SouthPool").setUrl(url));
+		InlineKeyboardButton js = new InlineKeyboardButton();
+		js.setText("Join SouthPool");
+		js.setUrl(url);
+		rowInline.add(js);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -207,7 +242,10 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("Join SouthPool Driver's Lounge").setUrl(url));
+		InlineKeyboardButton jsdl = new InlineKeyboardButton();
+		jsdl.setText("Join SouthPool Driver's Lounge");
+		jsdl.setUrl(url);
+		rowInline.add(jsdl);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -283,8 +321,16 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText("DRIVER").setCallbackData(CallbackCommands.DRIVER));
-		rowInline.add(new InlineKeyboardButton().setText("PASSENGER").setCallbackData(CallbackCommands.PASSENGER));
+		InlineKeyboardButton d = new InlineKeyboardButton();
+		d.setText("DRIVER");
+		d.setCallbackData(CallbackCommands.DRIVER);
+		
+		InlineKeyboardButton p = new InlineKeyboardButton();
+		p.setText("PASSENGER");
+		p.setCallbackData(CallbackCommands.PASSENGER);
+		
+		rowInline.add(d);
+		rowInline.add(p);
 		rowsInline.add(rowInline);
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;
@@ -444,8 +490,17 @@ public class ConstantMessage {
 		InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> rowInline = new ArrayList<>();
-		rowInline.add(new InlineKeyboardButton().setText(REGISTER).setCallbackData(CallbackCommands.REGISTER));
-		rowInline.add(new InlineKeyboardButton().setText("HELP").setCallbackData(CallbackCommands.HELP));
+		
+		InlineKeyboardButton r = new InlineKeyboardButton();
+		r.setText(REGISTER);
+		r.setCallbackData(CallbackCommands.REGISTER);
+		
+		InlineKeyboardButton h = new InlineKeyboardButton();
+		h.setText("HELP");
+		h.setCallbackData(CallbackCommands.HELP);
+		
+		rowInline.add(r);
+		rowInline.add(h);
 		rowsInline.add(rowInline);// Set the keyboard to the markup
 		markupInline.setKeyboard(rowsInline);
 		return markupInline;

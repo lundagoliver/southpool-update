@@ -49,7 +49,11 @@ public class InlineKeyboardBuilder {
     }
 
     public InlineKeyboardBuilder button(String text, String callbackData, String url) {
-        row.add(new InlineKeyboardButton().setText(text).setUrl(url).setCallbackData(callbackData));
+    	InlineKeyboardButton ik = new InlineKeyboardButton();
+    	ik.setText(text);
+    	ik.setUrl(url);
+    	ik.setCallbackData(callbackData);
+        row.add(ik);
         return this;
     }
 

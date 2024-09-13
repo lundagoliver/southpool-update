@@ -3,7 +3,6 @@ package com.systems.telegram.bot.southpool.controller;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,6 @@ import com.systems.telegram.bot.southpool.controller.tranportation.Home2Work;
 import com.systems.telegram.bot.southpool.controller.tranportation.Work2Home;
 import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.ProfilePage;
 import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.Page;
-import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.PageResult;
 import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.pages.Pages;
 import com.systems.telegram.bot.southpool.controller.tranportation.profile.response.updateprofile.UpdateProfileResponse;
 import com.systems.telegram.bot.southpool.controller.update.UpdateMember;
@@ -135,7 +133,8 @@ public class SPController extends TelegramLongPollingBot {
 
 			//Initialize SendMessage
 			SendMessage message = new SendMessage();
-			message.setChatId(chatId).setParseMode("HTML");
+			message.setChatId(chatId);
+			message.setParseMode("HTML");
 
 			//Check if username is set already. If username is not yet set, show some information how to do it.
 			if (username == null) {
@@ -596,7 +595,7 @@ public class SPController extends TelegramLongPollingBot {
 						else {
 							member = persistenceService.getMember(username, SouthPoolMemberWorkToHome.class);	
 						}
-						
+
 						if (member.getPostCount() < 5) {
 							message.setText("You still have remaining "+ (5 - member.getPostCount()) +" post count in your account.");
 							sendMessage(message);
@@ -627,7 +626,7 @@ public class SPController extends TelegramLongPollingBot {
 							sendMessage(message);
 							return;
 						}
-						
+
 						if (Integer.valueOf(messageText) > 5 ) {
 							message.setText("Sorry, we only allow max of 5 stars for post request count conversion!");
 							sendMessage(message);
@@ -636,12 +635,12 @@ public class SPController extends TelegramLongPollingBot {
 						int starToconvert = Integer.valueOf(messageText); 
 						member.setPostCount(member.getPostCount() - starToconvert);
 						persistenceService.merge(member);
-						
+
 						MemberStar memberStar = persistenceService.getMember(username, MemberStar.class);
 						long latestStar = memberStar.getStar() - starToconvert;
 						memberStar.setStar(latestStar);
 						persistenceService.merge(memberStar);
-						
+
 						String success = EmojiParser.parseToUnicode(":white_check_mark:");
 						message.setText(success + "Your " + Integer.valueOf(messageText) + " star(s) was succefully converted to " + starToconvert +" Post Request Count!");
 						sendMessage(message);
@@ -695,7 +694,7 @@ public class SPController extends TelegramLongPollingBot {
 							sendMessage(home2Work.proccess(chatId, southPoolMemberWorkToHome,persistenceService));
 						}	
 					}
-					
+
 					break;
 				}
 			}
@@ -709,6 +708,10 @@ public class SPController extends TelegramLongPollingBot {
 
 			SendMessage message = new SendMessage();
 			ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+			//TODO - initialize InlineKeyboard
+			ArrayList<KeyboardRow> rows = new ArrayList<>();
+			replyKeyboardMarkup.setKeyboard(rows);
+			
 			message.setReplyMarkup(replyKeyboardMarkup);
 			replyKeyboardMarkup.setSelective(true);
 			replyKeyboardMarkup.setResizeKeyboard(true);
@@ -1362,10 +1365,13 @@ public class SPController extends TelegramLongPollingBot {
 
 			case CallbackCommands.MY_LOCATION:
 				KeyboardRow row = new KeyboardRow();
-				row.add(new KeyboardButton().setText("My Current Location").setRequestLocation(true));
+				KeyboardButton kb = new KeyboardButton();
+				kb.setText("My Current Location");
+				kb.setRequestLocation(true);
+				row.add(kb);
 				ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
 				markup.setResizeKeyboard(true);
-				ArrayList<KeyboardRow> rows = new ArrayList<>();
+				rows = new ArrayList<>();
 				rows.add(row);
 				markup.setKeyboard(rows);
 				message.setReplyMarkup(markup);
@@ -1756,12 +1762,12 @@ public class SPController extends TelegramLongPollingBot {
 	}
 
 	protected void replaceMessage(long chatId, long messageId, SendMessage message) {
-		EditMessageText newMessage = new EditMessageText()
-				.setChatId(chatId)
-				.setMessageId(Math.toIntExact(messageId))
-				.setText(message.getText())
-				.setParseMode("HTML")
-				.setReplyMarkup((InlineKeyboardMarkup) message.getReplyMarkup());
+		EditMessageText newMessage = new EditMessageText();
+		newMessage.setChatId(chatId);
+		newMessage.setMessageId(Math.toIntExact(messageId));
+		newMessage.setText(message.getText());
+		newMessage.setParseMode("HTML");
+		newMessage.setReplyMarkup((InlineKeyboardMarkup) message.getReplyMarkup());
 		try {
 			execute(newMessage);
 		} catch (TelegramApiException e) {
